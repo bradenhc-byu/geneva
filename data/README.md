@@ -1,9 +1,8 @@
-#AAindex: Amino Acid Index Database
-###Release 9.2, Feb 2017
+# AAindex: Amino Acid Index Database
+### Release 9.2, Feb 2017
 http://www.genome.jp/aaindex
 
-##Introduction
-============
+## Introduction
 
 An amino acid index is a set of 20 numerical values representing any
 of the different physicochemical and biological properties of amino
@@ -22,8 +21,7 @@ matrices together with the result of cluster analysis.  This section
 currently contains 94 matrices.
 
 
-##Important Changes
-=================
+## Important Changes
 
 [release 9.0]
 
@@ -36,8 +34,7 @@ The M field has been newly introduced instead of the I field.
 Actual data format of the M field is shown in the example below.
 
 
-##References
-==========
+## References
 
 Please cite the following references when making use of the database:
 
@@ -56,8 +53,7 @@ Please cite the following references when making use of the database:
        database.  Nucleic Acids Res. 28, 374 (2000).
 
 
-##Correspondence
-==============
+## Correspondence
 
     Shuichi Kawashima
     Database Center for Life Science,
@@ -70,7 +66,8 @@ Please cite the following references when making use of the database:
                                                Last update: 2017/02/01
 
 
-##(Data Format of AAindex1)
+## (Data Format of AAindex1)
+```
 ************************************************************************
 *                                                                      *
 * Each entry has the following format.                                 *
@@ -91,8 +88,10 @@ Please cite the following references when making use of the database:
 *   Leu    Lys    Met    Phe    Pro    Ser    Thr    Trp    Tyr    Val *
 * //                                                                   *
 ************************************************************************
+```
 
-(Data Format of AAindex2)
+## (Data Format of AAindex2)
+```
 ************************************************************************
 *                                                                      *
 * Each entry has the following format.                                 *
@@ -127,5 +126,5 @@ Please cite the following references when making use of the database:
 *   AV RV NV DV CV QV EV GV HV IV LV KV MV FV PV SV TV WV YV VV        *
 * //                                                                   *
 ************************************************************************
-
+```
 
