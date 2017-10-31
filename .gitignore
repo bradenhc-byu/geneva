@@ -1,0 +1,7 @@
+#
+# GIT will not add anything included in this file to the commit
+#
+#
+
+# Ignore all compiled Python byte code
+**.pyc
