@@ -23,3 +23,14 @@ class WekaData:
         else:
             m = Mutation(mutation)
             self.__mutations[mutation] = m
+            return True
+
+    def getFeatures(self):
+        return self.__features
+
+    def addFeature(self,feature):
+        if feature not in self.__features:
+            self.__features.append(feature)
+            return True
+        else:
+            return False

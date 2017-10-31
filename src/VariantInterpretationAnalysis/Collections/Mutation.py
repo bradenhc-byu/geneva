@@ -13,6 +13,7 @@ class Mutation:
 
     def addFeature(self,feature,value):
         self.__features[feature] = value
+        return True
 
     def getFeature(self,feature):
         if feature in self.__features.keys():

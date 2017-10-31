@@ -1,7 +1,8 @@
 ################################################################################
+# Gene Variant Interpretation Analysis
 #
-#
-#
+# Main python file that runs the VIA gui and event loop. This is where all the
+# magic starts.
 #
 
 # Import required files
