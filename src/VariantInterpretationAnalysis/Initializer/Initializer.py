@@ -3,7 +3,7 @@
 #
 # Controls the initialization of the WekaData object used in the system.
 #
-from VariantInterpretationAnalysis.VIACollections.WekaData import WekaData
+from VariantInterpretationAnalysis.Collections.WekaData import WekaData
 from os import path
 
 

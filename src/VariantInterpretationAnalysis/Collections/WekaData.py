@@ -4,7 +4,7 @@
 # Contains a map of mutation objects that store information about features
 # associated with each mutation
 #
-from VariantInterpretationAnalysis.VIACollections.Mutation import Mutation
+from VariantInterpretationAnalysis.Collections.Mutation import Mutation
 
 
 class WekaData:
