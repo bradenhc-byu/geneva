@@ -3,5 +3,10 @@
 #
 #
 
-# Ignore all compiled Python byte code
-**.pyc
+# Ignore all IDE workspace settings
+**.idea # Intellij
+
+
+# Ignore all optimizd and compiled Python byte code
+**__pycache__/
+**.py[cod]
