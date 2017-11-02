@@ -1,0 +1,12 @@
+#
+# GIT will not add anything included in this file to the commit
+#
+#
+
+# Ignore all IDE workspace settings
+**.idea
+
+
+# Ignore all optimizd and compiled Python byte code
+**__pycache__/
+**.py[cod]
