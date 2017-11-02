@@ -22,7 +22,6 @@ def run(argv):
     testMutation = ""
     loadFromCloud = False
 
-
     # Parse the arguments if there are any
     if argv:
         for i in range(len(argv)):
@@ -40,7 +39,6 @@ def run(argv):
 
             elif argv[i] == "-l":
                 loadFromCloud = True
-
 
     # Initialize the Weka Data
     mutationsFile = DATA_DIR + "mutations.txt"
