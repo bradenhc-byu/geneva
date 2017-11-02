@@ -18,6 +18,9 @@ class WekaData:
         if mutation in self.__mutations.keys():
             return self.__mutations[mutation]
 
+    def getMutations(self):
+        return self.__mutations
+
     def addMutation(self,mutation):
         if mutation in self.__mutations.keys():
             return False
