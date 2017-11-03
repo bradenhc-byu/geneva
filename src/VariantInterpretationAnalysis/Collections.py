@@ -7,9 +7,23 @@
 
 class Mutation:
 
-    def __init__(self, name):
-        self.__name = name
+    def __init__(self, id, symbol="", index=-1, clinical_significance="",
+                 rs_num=-1):
+        self.__id = id
+        self.__symbol = symbol
+        self.__index = index
+        self.__clinical_sig = clinical_significance
+        self.__rs_num = rs_num
         self.__features = dict()
+
+    def getId(self):
+        return self.__id
+
+    def getSymbol(self,three=False):
+        if three:
+            self.__symbol
+        else:
+            return
 
     def addFeature(self,feature,value):
         self.__features[feature] = value
