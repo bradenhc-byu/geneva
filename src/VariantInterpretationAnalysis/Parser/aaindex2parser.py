@@ -5,13 +5,21 @@ from VariantInterpretationAnalysis.Definitions import DATA_DIR
 #######
 #aaindex2parser.py
 ######
-map={}
-acid_abr = "ARNDCQEGHILKMFPSTWYV*"
-#######
-group_counter=-1
-row_counter=0
-with open(DATA_DIR+"aaindex2") as f:
+def parse():
+ ######
+ map={}
+ feature_list = list()
+ acid_abr = "ARNDCQEGHILKMFPSTWYV*"
+ #######
+ group_counter=-1
+ row_counter=0
+ group_name=""
+ for i in range(2,3):
+  with open(DATA_DIR+"aaindex"+str(i)) as f:
     for line in f:
+        if re.search('H [a-zA-Z0-9]', line):
+            group_name = line[2:-1]
+            feature_list.append(group_name)
         #print(line)
         if "M rows = " in line:
             start = line.index("M rows =")+9
@@ -35,10 +43,12 @@ with open(DATA_DIR+"aaindex2") as f:
                 col = item-1
                 #print(str(col)+" r:"+str(row_counter)+" g:"+str(group_counter))
                 
-                forward = str(group_counter)+""+acid_abr[col]+" "+acid_abr[row_counter]
-                backward = str(group_counter)+""+acid_abr[row_counter]+" "+acid_abr[col]
+                forward = str(group_name)+" "+acid_abr[col]+" "+acid_abr[row_counter]
+                backward = str(group_name)+" "+acid_abr[row_counter]+" "+acid_abr[col]
                 
                 map[forward] = str(items[item].strip())
                 map[backward] = str(items[item].strip())
-                print(str(group_counter)+" "+forward+ ": "+str(items[item].strip()))
+                print(forward+ ":"+str(items[item].strip()))
             row_counter = row_counter + 1
+ return (map, feature_list)
+parse()
