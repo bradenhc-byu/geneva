@@ -9,7 +9,7 @@
 
 from Definitions import DATA_DIR
 
-def Wrangler:
+class Wrangler:
     def __init__(self, wekaData):
         self.__wekaData = wekaData
 
@@ -21,12 +21,12 @@ def Wrangler:
 
     # dict of feature type to function
     dispatcher = {
-        "x" : addXToMutation(),
-        "y" : addYToMutation()
+        "x": addXToMutation(),
+        "y": addYToMutation()
     }
 
     def populateWekaData(self):
         for f in self.wekaData.getFeatures():
-            addFeature = dispatcher(f)
+            addFeature = Wrangler.dispatcher(f)
             for m in self.wekaData.getMutations():
                 addFeature(m)
