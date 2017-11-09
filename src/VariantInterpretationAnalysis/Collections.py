@@ -37,6 +37,21 @@ class Mutation:
 
 
 ################################################################################
+# Feature
+#
+# Contains feature name, location of source data
+# Used for storing non-default features
+class Feature:
+    def __init__(self, name, fileName = "DEFAULT"):
+        if fileName == "DEFAULT":
+            fileName = name + '.txt'
+
+        self.name = name
+        self.fileName = fileName
+
+
+
+################################################################################
 # WekaData - Data Structure
 #
 # Contains a map of mutation objects that store information about features
@@ -48,6 +63,8 @@ class WekaData:
 
     def __init__(self):
         self.__mutations = dict()
+        self.__defaultFeatures = list()
+        self.__defaultFeatureMap = {}
         self.__features = list()
         self.__algorithms = list()
 

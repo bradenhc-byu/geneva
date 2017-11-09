@@ -8,25 +8,49 @@
 # Returns populated WekaData object
 
 from Definitions import DATA_DIR
+from Collections import Mutation
+import Parser
 
 class Wrangler:
     def __init__(self, wekaData):
         self.__wekaData = wekaData
 
-    def addXToMutation(mutation):
-        return False
+    def addDefaultFeatureToMutation(self, feature, mutation):
+        dfMap = self.__wekaData.defaultFeatures
+        featureMutationCode = "...."
+        value = dfMap[featureMutationCode]
+        # add to mutation
 
-    def addYToMutation(mutation):
+    def addGeneFamilyToMutation(self, mutation, gfMap):
+        mutation.addFeature("GENE_FAMILY", gfMap[mutation.symbol])
+        return True
+
+    def addYToMutation(self, mutation):
         return False
 
     # dict of feature type to function
     dispatcher = {
-        "x": addXToMutation(),
+        "GENE_FAMILY": addGeneFamilyToMutation(),
         "y": addYToMutation()
     }
 
+    parserDispatcher = {
+
+    }
+
     def populateWekaData(self):
-        for f in self.wekaData.getFeatures():
-            addFeature = Wrangler.dispatcher(f)
-            for m in self.wekaData.getMutations():
-                addFeature(m)
+        for df in self.__wekaData.defaultFeatures():
+            for m in self.__wekaData.getMutations:
+                self.addDefaultFeatureToMutation(df, m)
+
+        for feature in self.__wekaData.getFeatures():
+            # check if file is there
+
+            # if it isn't, download
+
+            # call parser on feature
+            dataMap = Parser.parse(feature)
+
+            addFeature = Wrangler.dispatcher[f]
+            for m in self.__wekaData.getMutations():
+                addFeature(m, dataMap)
