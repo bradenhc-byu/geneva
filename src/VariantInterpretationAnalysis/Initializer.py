@@ -9,15 +9,23 @@ from Parser import MutationInfoParser
 import logging
 
 
+def getAAIndex2Map(data):
+    (default_feature_map, default_features) = parse() #calls aaindex2parser
+    data.__defaultFeatures = default_features
+    data.__defaultFeatureMap = default_feature_map
+    return
+
+
 # ------------------------------------------------------------------------------
 # Initializes a WekaData object with the names of mutations to be used in this
 # session of the program
 #
 def init_weka_data(filename, cleaned=False):
-    logging.getLogger(__name__).info("Initializing Weka Data")
+    logging.getLogger('genevia').info("Initializing Weka Data")
     if os.path.exists(filename):
         data = WekaData()
-        with open(filename,"r") as mutationFile:
+        getAAIndex2Map(data)
+        with open(filename, "r") as mutationFile:
             outfile = open("./mutations.txt", "w")
             outfile.write("ID\tName\tSymbol\tIndex\tRSNum"
                           "\tClinicalSignificance\n")
@@ -29,11 +37,10 @@ def init_weka_data(filename, cleaned=False):
                     data.addMutation(mutation)
             outfile.close()
             mutationFile.close()
-        logging.getLogger(__name__).info("Initialization complete!")
+        logging.getLogger('genevia').info("Initialization complete!")
         return data
     else:
         return None
-
 
 
 # Testing

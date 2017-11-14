@@ -3,8 +3,6 @@
 # Parser for mutation information obtained via
 #
 import os
-import hashlib
-import binascii
 import re
 from VariantInterpretationAnalysis.Collections import Mutation
 
@@ -86,10 +84,9 @@ def pre_parse(infile, outfile, use_all=False):
                 # Get the clinical significance
                 significance = ' '.join(data[3:-1]).lower()
                 if not use_all \
-                        and (significance.find("conflicting") != -1 \
-                                     or (significance.find("pathogenic") == -1 \
-                                                 and significance.find(
-                                    "benign") == -1)):
+                    and (significance.find("conflicting") != -1
+                         or (significance.find("pathogenic") == -1
+                             and significance.find("benign") == -1)):
                     return None
 
                 # Get the dbSNP number

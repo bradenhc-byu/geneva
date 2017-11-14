@@ -1,7 +1,7 @@
 import sys
 import re
 sys.path.append('../..')
-from VariantInterpretationAnalysis.Definitions import DATA_DIR
+from Definitions import DATA_DIR
 #######
 #aaindex2parser.py
 ######
@@ -51,4 +51,4 @@ def parse():
                 print(forward+ ":"+str(items[item].strip()))
             row_counter = row_counter + 1
  return (map, feature_list)
-parse()
+#parse()

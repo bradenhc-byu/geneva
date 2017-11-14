@@ -3,6 +3,7 @@
 #
 #
 import os
+from Collections import Feature
 
 
 # Root directory of the program
@@ -15,7 +16,8 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 AVAILABLE_FEATURES = [
     "x",
     "y",
-    "z"
+    "z",
+    Feature("GENE_FAMILY", "geneFamilyData.txt")
 ]
 
 # List of default features the program will use if additional features aren't
