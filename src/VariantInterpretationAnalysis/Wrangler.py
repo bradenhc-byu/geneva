@@ -17,7 +17,7 @@ class Wrangler:
 
     def addDefaultFeatureToMutation(self, feature, mutation):
         dfMap = self.__wekaData.defaultFeatures
-        featureMutationCode = "...."
+        featureMutationCode = feature + " " + mutation.aa1 + " " + mutation.aa2
         value = dfMap[featureMutationCode]
         # add to mutation
 
