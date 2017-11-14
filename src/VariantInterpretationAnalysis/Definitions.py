@@ -3,6 +3,7 @@
 #
 #
 import os
+from Collections import Feature
 
 amnio_acids = {"Ala", "Arg", "Asn", "Asp", "Cys", "Gln", "Glu", "Gly", "His", "Ile", "Leu", "Lys", "Met", "Phe", "Pro", "Ser", "Thr", "Trp", "Tyr", "Val", "Ter"}
 acid_abr = "ARNDCQEGHILKMFPSTWYV*"
@@ -14,7 +15,8 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 AVAILABLE_FEATURES = [
     "x",
     "y",
-    "z"
+    "z",
+    Feature("GENE_FAMILY", "geneFamilyData.txt")
 ]
 
 DEFAULT_FEATURES = [
