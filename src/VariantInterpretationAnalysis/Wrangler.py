@@ -7,7 +7,7 @@
 #
 # Returns populated WekaData object
 
-from Definitions import DATA_DIR
+from Definitions import DATA_DIR,AMINO_ACIDS_3_1
 from Collections import Mutation
 import Parser
 
@@ -16,15 +16,18 @@ class Wrangler:
         self.__wekaData = wekaData
 
     def addDefaultFeatureToMutation(self, feature, mutation):
-        dfMap = self.__wekaData.defaultFeatures
-        featureMutationCode = feature + " " + mutation.aa1 + " " + mutation.aa2
+        dfMap = self.__wekaData.__defaultFeatures
+        (part1,part2) = mutation.get_symbol(True)
+        part1_short = AMINO_ACIDS_3_1[part1]
+        part2_short = AMINO_ACIDS_3_1[part2]
+        featureMutationCode = feature + " " + part1_short + " " + part2_short
         value = dfMap[featureMutationCode]
         # add to mutation
-        #mutation.addFeature(feature,value)
+        mutation.addFeature(feature,value)
         return True
 
     def addGeneFamilyToMutation(self, mutation, gfMap):
-        mutation.addFeature("GENE_FAMILY", gfMap[mutation.symbol])
+        mutation.addFeature("GENE_FAMILY", gfMap[mutation.__gene])
         return True
 
     def addYToMutation(self, mutation):
@@ -32,8 +35,8 @@ class Wrangler:
 
     # dict of feature type to function
     dispatcher = {
-        "GENE_FAMILY": addGeneFamilyToMutation(),
-        "y": addYToMutation()
+        #"GENE_FAMILY": addGeneFamilyToMutation(),
+        #"y": addYToMutation()
     }
 
     parserDispatcher = {
@@ -41,8 +44,8 @@ class Wrangler:
     }
 
     def populateWekaData(self):
-        for df in self.__wekaData.defaultFeatures():
-            for m in self.__wekaData.getMutations:
+        for df in self.__wekaData.getDefaultFeatures():
+            for m in self.__wekaData.getMutations():
                 self.addDefaultFeatureToMutation(df, m)
 
         for feature in self.__wekaData.getFeatures():

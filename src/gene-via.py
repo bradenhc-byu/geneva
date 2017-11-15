@@ -39,7 +39,7 @@ def run(argv):
 
     # Initialize the Weka Data
     mutationsFile = DATA_DIR + "mutations.txt"
-    wekaData = Initializer.initWekaData(mutationsFile)
+    wekaData = Initializer.init_weka_data(mutationsFile)
     
     for f in features:
         if f in AVAILABLE_FEATURES:
@@ -56,7 +56,7 @@ def run(argv):
     # Pass things off to the wrangler
     
     # (Always load the stuff from aaindex2,3)
-    w = Wrangler(wekaData)
+    w = Wrangler.Wrangler(wekaData)
     w.populateWekaData()
     
     # Now have the WekaPrimer write the appropriate files

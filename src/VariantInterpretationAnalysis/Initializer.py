@@ -6,11 +6,12 @@
 import os
 from Collections import WekaData
 from Parser import MutationInfoParser
+from Parser import aaindex2parser
 import logging
 
 
 def getAAIndex2Map(data):
-    (default_feature_map, default_features) = parse() #calls aaindex2parser
+    (default_feature_map, default_features) = aaindex2parser.parse() #calls aaindex2parser
     data.__defaultFeatures = default_features
     data.__defaultFeatureMap = default_feature_map
     return
@@ -31,7 +32,7 @@ def init_weka_data(filename, cleaned=False):
                           "\tClinicalSignificance\n")
             headers = mutationFile.readline().strip().split()
             for line in mutationFile:
-                mutation = MutationInfoParser.parseLine(line)
+                mutation = MutationInfoParser.parse_mutation(line)
                 if mutation is not None:
                     outfile.write(str(mutation) + "\n")
                     data.addMutation(mutation)
@@ -40,6 +41,7 @@ def init_weka_data(filename, cleaned=False):
         logging.getLogger('genevia').info("Initialization complete!")
         return data
     else:
+        print "ERROR"
         return None
 
 
