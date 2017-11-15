@@ -20,6 +20,8 @@ class Wrangler:
         featureMutationCode = feature + " " + mutation.aa1 + " " + mutation.aa2
         value = dfMap[featureMutationCode]
         # add to mutation
+        #mutation.addFeature(feature,value)
+        return True
 
     def addGeneFamilyToMutation(self, mutation, gfMap):
         mutation.addFeature("GENE_FAMILY", gfMap[mutation.symbol])
