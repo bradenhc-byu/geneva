@@ -10,6 +10,8 @@
 from Definitions import DATA_DIR
 from Collections import Mutation
 import Parser
+import os
+import DataBridge
 
 class Wrangler:
     def __init__(self, wekaData):
@@ -45,8 +47,9 @@ class Wrangler:
 
         for feature in self.__wekaData.getFeatures():
             # check if file is there
-
             # if it isn't, download
+            if not os.path.isfilename(feature.fileName):
+                DataBridge.download(feature, self.__wekaData.getMutations())
 
             # call parser on feature
             dataMap = Parser.parse(feature)

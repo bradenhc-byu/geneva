@@ -4,12 +4,13 @@
 #
 #
 
+import json
+import httplib as http
+from urlparse import urlparse
+from Collections import Mutation,Feature
+
+
 class DataBridge:
-    def __init__(self:
-        pass
-
-
-
     def getGeneFamilyRequest(self, mutations):
         def getGeneId(gene):
             headers = {
@@ -90,8 +91,29 @@ class DataBridge:
         "GENE_FAMILY": getGeneFamilyRequest
     }
 
+    def saveToFile(self, text, fileName):
+        f = open(fileName, 'w')
+        f.write(text)
+        f.close()
 
-    def getData(self, feature, mutations):
-        request = DataBridge.requestDispatcher[feature.name](mutations)
-        response = makeHttpRequest(request)
-        saveToFile(response, feature.fileName)
+
+    def makeHttpRequest(self, request):
+        pass
+
+
+    @staticmethod
+    def download(feature, mutations):
+        # TODO: use Log
+        requestParams = DataBridge.requestDispatcher[feature.name](mutations)
+        h = http.Http()
+        response, content = h.request(*requestParams)
+        if response['status'] == '200':
+            DataBridge.saveToFile(content, feature.__fileName)
+        else:
+            print 'Error detected: ' + response['status']
+
+    @staticmethod
+    def main():
+        download(Feature("GENE_FAMILY", "../data/gf.txt"), [Mutation("hello", "ZNF513")])
+
+DataBridge.main()

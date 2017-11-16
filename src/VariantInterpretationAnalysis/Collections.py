@@ -46,8 +46,8 @@ class Feature:
         if fileName == "DEFAULT":
             fileName = name + '.txt'
 
-        self.name = name
-        self.fileName = fileName
+        self.__name = name
+        self.__fileName = fileName
 
 
 
