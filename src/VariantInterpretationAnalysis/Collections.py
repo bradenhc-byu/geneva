@@ -56,8 +56,20 @@ class Mutation:
     def get_gene(self):
         return self.__gene
 
-    def get_clinical_significance(self):
+    def get_clinical_significance_E(self):
         return self.__clinical_sig
+
+    def get_clinical_significance(self):
+        if self.__clinical_sig == Mutation.BENIGN:
+            return "benign"
+        elif self.__clinical_sig == Mutation.PATHOGENIC:
+            return "pathogenic"
+        elif self.__clinical_sig == Mutation.CONFLICTING:
+            return "conflicting"
+        elif self.__clinical_sig == Mutation.RISK:
+            return "risk"
+        else:
+            return "unknown"
 
     def get_rs_number(self):
         return self.__rs_num
@@ -81,9 +93,19 @@ class Mutation:
                      str(self.__index) + "\t" + \
                      str(self.__gene) + "\t" + \
                      str(self.__rs_num) + "\t" + \
-                     str(self.__clinical_sig)
+                     self.get_clinical_significance()
 
         return out_string
+
+    def __eq__(self, other):
+        if self.__name.equals(other.get_name()) \
+            and self.__symbol.equals(other.get_symbol()) \
+            and self.__index == other.get_index() \
+            and self.__gene.equals(other.get_gene()) \
+            and self.__rs_num == other.get_rs_number() \
+            and self.__clinical_sig == other.get_clinical_significance_E():
+            return True
+        return False
 
 
 ################################################################################
@@ -100,37 +122,30 @@ class Feature:
         self.fileName = fileName
 
 
-
 ################################################################################
 # WekaData - Data Structure
 #
 # Contains a map of mutation objects that store information about features
 # associated with each mutation
 #
-
-
+# Since we are dealing with very large sets of data, this class uses
+# the Pandas data structure
+#
 class WekaData:
 
     def __init__(self):
-        self.__mutations = dict()
+        self.__mutations = list()
         self.__defaultFeatures = list()
         self.__defaultFeatureMap = {}
         self.__features = list()
         self.__algorithms = list()
 
-    def getMutation(self,mutation):
-        if mutation in self.__mutations.keys():
-            return self.__mutations[mutation]
-
     def getMutations(self):
         return self.__mutations
 
-    def addMutation(self,mutation):
-        if mutation in self.__mutations.keys():
-            return False
-        else:
-            self.__mutations[mutation.getId()] = mutation
-            return True
+    def addMutation(self, mutation):
+        self.__mutations.append(mutation)
+        return True
 
     def getFeatures(self):
         return self.__features
