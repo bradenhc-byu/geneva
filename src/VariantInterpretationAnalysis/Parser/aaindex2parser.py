@@ -48,7 +48,7 @@ def parse():
                 
                 map[forward] = str(items[item].strip())
                 map[backward] = str(items[item].strip())
-                print(forward+ ":"+str(items[item].strip()))
+                #print(forward+ ":"+str(items[item].strip()))
             row_counter = row_counter + 1
  return (map, feature_list)
-parse()
+#parse()

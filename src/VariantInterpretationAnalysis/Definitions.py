@@ -5,13 +5,14 @@
 import os
 from Collections import Feature
 
-amnio_acids = {"Ala", "Arg", "Asn", "Asp", "Cys", "Gln", "Glu", "Gly", "His", "Ile", "Leu", "Lys", "Met", "Phe", "Pro", "Ser", "Thr", "Trp", "Tyr", "Val", "Ter"}
-acid_abr = "ARNDCQEGHILKMFPSTWYV*"
 
+# Root directory of the program
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Directory of the data path
 DATA_DIR = os.path.join(ROOT_DIR, "data/")
 
+# List of available features to plug into Weka
 AVAILABLE_FEATURES = [
     "x",
     "y",
@@ -19,48 +20,51 @@ AVAILABLE_FEATURES = [
     Feature("GENE_FAMILY", "geneFamilyData.txt")
 ]
 
+# List of default features the program will use if additional features aren't
+#  specified
 DEFAULT_FEATURES = [
-    "x",
-    "y",
-    "x"
 ]
 
+# List of available algorithms to use in Weka
 AVAILABLE_ALGORITHMS = [
     "x",
     "y",
     "z"
 ]
 
-DEFAULT_ALGORITHMS = AVAILABLE_ALGORITHMS
+# Default algorithms to use in Weka
+DEFAULT_ALGORITHMS = []
 
-MUTATION_SYMBOLS_2_3 = [
-Ala     A       Alanine
-        Arg     R       Arginine
-        Asn     N       Asparagine
-        Asp     D       Aspartic acid (Aspartate)
-        Cys     C       Cysteine
-        Gln     Q       Glutamine
-        Glu     E       Glutamic acid (Glutamate)
-        Gly     G       Glycine
-        His     H       Histidine
-        Ile     I       Isoleucine
-        Leu     L       Leucine
-        Lys     K       Lysine
-        Met     M       Methionine
-        Phe     F       Phenylalanine
-        Pro     P       Proline
-        Ser     S       Serine
-        Thr     T       Threonine
-        Trp     W       Tryptophan
-        Tyr     Y       Tyrosine
-        Val     V       Valine
-        Asx     B       Aspartic acid or Asparagine
-        Glx     Z       Glutamine or Glutamic acid.
-        Xaa     X       Any amino acid.
-        TERM            termination codon
+# Dictionary of Amino Acid conversions: 1 letter abbreviation to 3 letter
+AMINO_ACIDS_1_3 = {
+    "A": "Ala",
+    "R": "Arg",
+    "N": "Asn",
+    "D": "Asp",
+    "C": "Cys",
+    "Q": "Gln",
+    "E": "Glu",
+    "G": "Gly",
+    "H": "His",
+    "I": "Ile",
+    "L": "Leu",
+    "K": "Lys",
+    "M": "Met",
+    "F": "Phe",
+    "P": "Pro",
+    "S": "Ser",
+    "T": "Thr",
+    "W": "Trp",
+    "Y": "Tyr",
+    "V": "Val",
+    "B": "Asx",
+    "Z": "Glx",
+    "X": "Xaa",
+    "*": "Ter"
+}
 
-]
+# Dictionary of amino acid conversions: 3 letter abbreviations to 1 letter
+AMINO_ACIDS_3_1 = dict((v, k) for k, v in AMINO_ACIDS_1_3.iteritems())
 
-MUTATION_SYMBOLS_3_2 = [
 
-]
+
