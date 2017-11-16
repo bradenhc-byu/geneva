@@ -51,4 +51,4 @@ def parse():
                 #print(forward+ ":"+str(items[item].strip()))
             row_counter = row_counter + 1
  return (map, feature_list)
-parse()
+#parse()

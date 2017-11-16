@@ -24,8 +24,9 @@ def parse_mutation(line):
     symbol = data[1]
     index = int(data[2])
     gene = data[3]
-    rs_num = int(data[4])
     significance = int(data[5])
+    rs_num = int(data[4])
+
 
     # Create the mutation
     m = Mutation(name, symbol, index, gene, significance, rs_num)

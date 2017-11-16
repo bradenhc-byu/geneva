@@ -23,7 +23,7 @@ class Mutation:
         :param name: The name containing additional information about the
                      mutation
         :param symbol: The three-character representation of the amino acid
-                       mutation
+                       mutation (both old and new, so 6 characters)
         :param index: The position at which the mutation takes place in the
                       sequence
         :param gene: The name of the gene in which the mutation was found
@@ -39,14 +39,16 @@ class Mutation:
         self.__features = dict()
 
     def get_id(self):
-        return self.__id
+        return self.__name
 
     def get_name(self):
         return self.__name
 
     def get_symbol(self, two=False):
         if two:
-            return self.__symbol
+            part1=self.__symbol[:3]
+            part2=self.__symbol[3:]
+            return (part1,part2)
         else:
             return self.__symbol
 
@@ -139,6 +141,9 @@ class WekaData:
         self.__defaultFeatureMap = {}
         self.__features = list()
         self.__algorithms = list()
+        
+    def getDefaultFeatures(self):
+        return self.__defaultFeatures
 
     def getMutations(self):
         return self.__mutations

@@ -7,6 +7,7 @@
 
 # Import required files
 from VariantInterpretationAnalysis import Initializer
+from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis.Definitions import *
 
 
@@ -38,7 +39,8 @@ def run(argv):
 
     # Initialize the Weka Data
     mutationsFile = DATA_DIR + "mutations.txt"
-    wekaData = Initializer.initWekaData(mutationsFile)
+    wekaData = Initializer.init_weka_data(mutationsFile)
+    
     for f in features:
         if f in AVAILABLE_FEATURES:
             wekaData.addFeature(f)
@@ -52,7 +54,11 @@ def run(argv):
             print "Found unknown algorithm '" + a + ""
 
     # Pass things off to the wrangler
-
+    
+    # (Always load the stuff from aaindex2,3)
+    w = Wrangler.Wrangler(wekaData)
+    w.populateWekaData()
+    
     # Now have the WekaPrimer write the appropriate files
 
     # Pass things off to weka using the weka CLI
