@@ -5,13 +5,12 @@
 #
 import os
 from Collections import WekaData
-from Parser import MutationInfoParser
-from Parser import aaindex2parser
-import logging
+from Parser import MutationInfoParser, aaindex2parser
+import Logger as Log
 
 
 def getAAIndex2Map(data):
-    (default_feature_map, default_features) = aaindex2parser.parse() #calls aaindex2parser
+    (default_feature_map, default_features) = aaindex2parser.parse()
     data.__defaultFeatures = default_features
     data.__defaultFeatureMap = default_feature_map
     return
@@ -21,31 +20,28 @@ def getAAIndex2Map(data):
 # Initializes a WekaData object with the names of mutations to be used in this
 # session of the program
 #
-def init_weka_data(filename, cleaned=False):
-    logging.getLogger('genevia').info("Initializing Weka Data")
+def init_weka_data(filename):
     if os.path.exists(filename):
+        Log.info("Initializing WekaData")
         data = WekaData()
         getAAIndex2Map(data)
-        with open(filename, "r") as mutationFile:
-            outfile = open("./mutations.txt", "w")
-            outfile.write("ID\tName\tSymbol\tIndex\tRSNum"
-                          "\tClinicalSignificance\n")
-            headers = mutationFile.readline().strip().split()
-            for line in mutationFile:
+        with open(filename, "r") as mutation_file:
+            for line in mutation_file:
                 mutation = MutationInfoParser.parse_mutation(line)
-                if mutation is not None:
-                    outfile.write(str(mutation) + "\n")
-                    data.addMutation(mutation)
-            outfile.close()
-            mutationFile.close()
-        logging.getLogger('genevia').info("Initialization complete!")
+                data.addMutation(mutation)
+        Log.info("Initialization complete!")
         return data
     else:
-        print "ERROR"
+        Log.error("Unable to open file: does not exist")
         return None
 
 
-# Testing
+def unit_test():
+    Log.set_log_level(Log.LEVEL_DEBUG)
+    data = init_weka_data("./data/mutations_certain")
+    print len(data.getMutations())
+
+
+# Unit Testing
 if __name__ == '__main__':
-    data = initWekaData("./data/cleaned_variants")
-    print data.getMutation(hash("NM_014630.2(ZNF592):c.3136G>A"))
+    unit_test()
