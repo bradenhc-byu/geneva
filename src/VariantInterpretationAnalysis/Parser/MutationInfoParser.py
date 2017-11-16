@@ -21,6 +21,7 @@ def parse_mutation(line):
     symbol = data[1]
     index = int(data[2])
     gene = data[3]
+
     sig_string = ' '.join(data[5:])
     if sig_string.find("benign") != -1:
         significance = Mutation.BENIGN

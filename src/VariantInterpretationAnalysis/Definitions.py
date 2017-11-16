@@ -23,9 +23,6 @@ AVAILABLE_FEATURES = [
 # List of default features the program will use if additional features aren't
 #  specified
 DEFAULT_FEATURES = [
-    "x",
-    "y",
-    "x"
 ]
 
 # List of available algorithms to use in Weka
@@ -36,7 +33,7 @@ AVAILABLE_ALGORITHMS = [
 ]
 
 # Default algorithms to use in Weka
-DEFAULT_ALGORITHMS = AVAILABLE_ALGORITHMS
+DEFAULT_ALGORITHMS = []
 
 # Dictionary of Amino Acid conversions: 1 letter abbreviation to 3 letter
 AMINO_ACIDS_1_3 = {
