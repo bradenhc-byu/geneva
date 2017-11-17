@@ -11,7 +11,6 @@ import Logger as Log
 
 def getAAIndex2Map(data):
     (default_feature_map, default_features) = aaindex2parser.parse()
-    print len(default_features)
     data.setDefaultFeatures(default_features)
     data.setDefaultFeatureMap(default_feature_map)
     return
@@ -40,7 +39,7 @@ def init_weka_data(filename):
 ################################################################################
 # Unit Testing -----------------------------------------------------------------
 def unit_test():
-    Log.set_log_level(Log.LEVEL_DEBUG)
+    Log.set_log_level("debug")
     data = init_weka_data("./data/mutations_certain")
     print len(data.getMutations())
 
