@@ -9,6 +9,7 @@
 from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis.Definitions import *
+import VariantInterpretationAnalysis.Logger as Log
 
 
 def run(argv):
@@ -38,26 +39,27 @@ def run(argv):
                 loadFromCloud = True
 
     # Initialize the Weka Data
-    mutationsFile = DATA_DIR + "mutations.txt"
+    mutationsFile = DATA_DIR + "mutations_certain"
     wekaData = Initializer.init_weka_data(mutationsFile)
     
     for f in features:
         if f in AVAILABLE_FEATURES:
             wekaData.addFeature(f)
         else:
-            print "Found unknown feature '" + f + "': excluding"
+            print Log.info("Found unknown feature '" + f + "': excluding")
 
     for a in algorithms:
         if a in AVAILABLE_ALGORITHMS:
             wekaData.addAlgorithm(a)
         else:
-            print "Found unknown algorithm '" + a + ""
+            print Log.info("Found unknown algorithm '" + a + "")
 
     # Pass things off to the wrangler
     
     # (Always load the stuff from aaindex2,3)
-    w = Wrangler.Wrangler(wekaData)
-    w.populateWekaData()
+    #w = Wrangler.Wrangler(wekaData)
+    #w.populateWekaData()
+    Log.info(str(len(wekaData.getDefaultFeatures())))
     
     # Now have the WekaPrimer write the appropriate files
 

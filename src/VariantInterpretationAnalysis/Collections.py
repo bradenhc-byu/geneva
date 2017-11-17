@@ -133,6 +133,8 @@ class Feature:
 # Since we are dealing with very large sets of data, this class uses
 # the Pandas data structure
 #
+import copy
+
 class WekaData:
 
     def __init__(self):
@@ -144,6 +146,23 @@ class WekaData:
         
     def getDefaultFeatures(self):
         return self.__defaultFeatures
+
+    def setDefaultFeatures(self, defaultFeatures):
+        self.__defaultFeatures = copy.deepcopy(defaultFeatures)
+        return True
+
+    def addDefaultFeature(self, feature):
+        if feature not in self.__defaultFeatures:
+            self.__defaultFeatures.append(feature)
+            return True
+        return False
+
+    def getDefaultFeatureMap(self):
+        return self.__defaultFeatureMap
+
+    def setDefaultFeatureMap(self, defaultFeatureMap):
+        self.__defaultFeatureMap = copy.deepcopy(defaultFeatureMap)
+        return True
 
     def getMutations(self):
         return self.__mutations
