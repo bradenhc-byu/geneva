@@ -16,18 +16,18 @@ class Wrangler:
         self.__wekaData = wekaData
 
     def addDefaultFeatureToMutation(self, feature, mutation):
-        dfMap = self.__wekaData.__defaultFeatures
+        dfMap = self.__wekaData.getDefaultFeatureMap()
         (part1,part2) = mutation.get_symbol(True)
-        part1_short = AMINO_ACIDS_3_1[part1]
-        part2_short = AMINO_ACIDS_3_1[part2]
+        part1_short = AMINO_ACIDS_3_1.get(part1, "?")
+        part2_short = AMINO_ACIDS_3_1.get(part2, "?")
         featureMutationCode = feature + " " + part1_short + " " + part2_short
-        value = dfMap[featureMutationCode]
+        value = dfMap.get(featureMutationCode, "?")
         # add to mutation
-        mutation.addFeature(feature,value)
+        mutation.add_feature(feature,value)
         return True
 
     def addGeneFamilyToMutation(self, mutation, gfMap):
-        mutation.addFeature("GENE_FAMILY", gfMap[mutation.__gene])
+        mutation.add_feature("GENE_FAMILY", gfMap[mutation.__gene])
         return True
 
     def addYToMutation(self, mutation):
@@ -47,6 +47,13 @@ class Wrangler:
         for df in self.__wekaData.getDefaultFeatures():
             for m in self.__wekaData.getMutations():
                 self.addDefaultFeatureToMutation(df, m)
+
+        #for m in self.__wekaData.getMutations():
+        #    myStr = ""
+        #    for df in self.__wekaData.getDefaultFeatures():
+        #        myStr = myStr + m.get_feature(df)+ " "
+        #    print myStr
+        
 
         for feature in self.__wekaData.getFeatures():
             # check if file is there

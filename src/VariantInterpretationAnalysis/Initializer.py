@@ -11,7 +11,6 @@ import Logger as Log
 
 def getAAIndex2Map(data):
     (default_feature_map, default_features) = aaindex2parser.parse()
-    print len(default_features)
     data.setDefaultFeatures(default_features)
     data.setDefaultFeatureMap(default_feature_map)
     return
