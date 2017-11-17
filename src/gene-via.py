@@ -57,7 +57,7 @@ def run(argv):
     # Pass things off to the wrangler
     
     # (Always load the stuff from aaindex2,3)
-    Log.info(str(len(wekaData.getDefaultFeatures())))
+    Log.info("DF size: "+str(len(wekaData.getDefaultFeatures())))
     w = Wrangler.Wrangler(wekaData)
     w.populateWekaData()
     # Now have the WekaPrimer write the appropriate files

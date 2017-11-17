@@ -7,9 +7,10 @@
 #
 # Returns populated WekaData object
 
-from Definitions import DATA_DIR,AMINO_ACIDS_3_1
+from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES,AVAILABLE_FEATURES_MAP
 from Collections import Mutation
 import Parser
+import os
 
 class Wrangler:
     def __init__(self, wekaData):
@@ -56,9 +57,13 @@ class Wrangler:
         
 
         for feature in self.__wekaData.getFeatures():
-            # check if file is there
+            feature_path=AVAILABLE_FEATURES_MAP.get(feature)
 
+            # check if file is there
             # if it isn't, download
+            if not os.path.exists(feature_path):
+                print "Does NOT exist"
+            
 
             # call parser on feature
             dataMap = Parser.parse(feature)
