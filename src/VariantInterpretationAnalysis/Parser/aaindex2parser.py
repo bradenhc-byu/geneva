@@ -21,7 +21,7 @@ def parse():
         with open(DATA_DIR + "aaindex" + str(i)) as f:
             for line in f:
                 if re.search('H [a-zA-Z0-9]', line):
-                    group_name = line[2:-1]
+                    group_name = line[2:-1].rstrip()
                     feature_list.append(group_name)
                 # print(line)
                 if "M rows = " in line:
@@ -46,10 +46,12 @@ def parse():
                         col = item - 1
                         # print(str(col)+" r:"+str(row_counter)+" g:"+str(group_counter))
 
-                        forward = str(group_name) + " " + acid_abr[col] + " " + \
-                                  acid_abr[row_counter]
-                        backward = str(group_name) + " " + acid_abr[
-                            row_counter] + " " + acid_abr[col]
+                        forward = "{0}:{1}".format(str(group_name),
+                                                   acid_abr[col] +
+                                                   acid_abr[row_counter])
+                        backward = "{0}:{1}".format(str(group_name),
+                                                    acid_abr[row_counter] +
+                                                    acid_abr[col])
 
                         map[forward] = str(items[item].strip())
                         map[backward] = str(items[item].strip())

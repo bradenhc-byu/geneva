@@ -48,9 +48,7 @@ class Mutation:
 
     def get_symbol(self, two=False):
         if two:
-            part1=self.__symbol[:3]
-            part2=self.__symbol[3:]
-            return (part1,part2)
+            return self.__symbol[0] + self.__symbol[3]
         else:
             return self.__symbol
 
