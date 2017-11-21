@@ -11,7 +11,8 @@ from Collections import Mutation,Feature
 
 
 class DataBridge:
-    def getGeneFamilyRequest(self, mutations):
+    @staticmethod
+    def getGeneFamilyRequest(mutations):
         def getGeneId(gene):
             headers = {
                 'Accept': 'application/json',
@@ -91,20 +92,17 @@ class DataBridge:
         "GENE_FAMILY": getGeneFamilyRequest
     }
 
-    def saveToFile(self, text, fileName):
+    @staticmethod
+    def saveToFile(text, fileName):
         f = open(fileName, 'w')
         f.write(text)
         f.close()
 
 
-    def makeHttpRequest(self, request):
-        pass
-
-
     @staticmethod
     def download(feature, mutations):
         # TODO: use Log
-        requestParams = DataBridge.requestDispatcher[feature.name](mutations)
+        requestParams = DataBridge.requestDispatcher[feature.__name](mutations)
         h = http.Http()
         response, content = h.request(*requestParams)
         if response['status'] == '200':
@@ -113,7 +111,7 @@ class DataBridge:
             print 'Error detected: ' + response['status']
 
     @staticmethod
-    def main():
-        download(Feature("GENE_FAMILY", "../data/gf.txt"), [Mutation("hello", "ZNF513")])
+    def unit_test():
+        DataBridge.download(Feature("GENE_FAMILY", "../data/gf.txt"), [Mutation("hello", "ZNF513")])
 
-DataBridge.main()
+DataBridge.unit_test()
