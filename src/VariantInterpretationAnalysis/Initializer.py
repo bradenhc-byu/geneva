@@ -4,15 +4,32 @@
 # Controls the initialization of the WekaData object used in the system.
 #
 import os
-from Collections import WekaData
+from Collections import WekaData, Feature
 from Parser import MutationInfoParser, aaindex2parser
 import Logger as Log
 
 
-def getAAIndex2Map(data):
+def get_aaindex2_data(data):
+    # Parse the aaindex2 file
     (default_feature_map, default_features) = aaindex2parser.parse()
-    data.__defaultFeatures = default_features
-    data.__defaultFeatureMap = default_feature_map
+
+    # Add the features to the weka data feature list
+    for feature in default_features:
+        data.addFeature(Feature(feature,
+                                feature+".txt",
+                                dataType=Feature.NUMERIC_TYPE))
+
+    # Add all the features to the mutations in the WekaData object
+    for mutation in data.getMutations():
+        for feature in default_features:
+            feature_key = feature + ":" + mutation.get_symbol(two=True)
+            try:
+                mutation.add_feature(feature,
+                                     str(default_feature_map[feature_key]))
+            except:
+                mutation.add_feature(feature, str(0))
+    data.setDefaultFeatures(default_features)
+    data.setDefaultFeatureMap(default_feature_map)
     return
 
 
@@ -22,13 +39,15 @@ def getAAIndex2Map(data):
 #
 def init_weka_data(filename):
     if os.path.exists(filename):
-        Log.info("Initializing WekaData")
+        Log.info("Initializing WekaData...")
         data = WekaData()
-        getAAIndex2Map(data)
+        Log.info("Gathering mutation info")
         with open(filename, "r") as mutation_file:
             for line in mutation_file:
                 mutation = MutationInfoParser.parse_mutation(line)
                 data.addMutation(mutation)
+        Log.info("Getting default features")
+        get_aaindex2_data(data)
         Log.info("Initialization complete!")
         return data
     else:
@@ -36,12 +55,13 @@ def init_weka_data(filename):
         return None
 
 
+################################################################################
+# Unit Testing -----------------------------------------------------------------
 def unit_test():
-    Log.set_log_level(Log.LEVEL_DEBUG)
+    Log.set_log_level("debug")
     data = init_weka_data("./data/mutations_certain")
     print len(data.getMutations())
 
 
-# Unit Testing
 if __name__ == '__main__':
     unit_test()

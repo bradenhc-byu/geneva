@@ -9,6 +9,7 @@
 from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis.Definitions import *
+import VariantInterpretationAnalysis.Logger as Log
 
 
 def run(argv):
@@ -38,27 +39,27 @@ def run(argv):
                 loadFromCloud = True
 
     # Initialize the Weka Data
-    mutationsFile = DATA_DIR + "mutations.txt"
+    mutationsFile = DATA_DIR + "mutations_certain"
     wekaData = Initializer.init_weka_data(mutationsFile)
     
     for f in features:
         if f in AVAILABLE_FEATURES:
             wekaData.addFeature(f)
         else:
-            print "Found unknown feature '" + f + "': excluding"
+            print Log.info("Found unknown feature '" + f + "': excluding")
 
     for a in algorithms:
         if a in AVAILABLE_ALGORITHMS:
             wekaData.addAlgorithm(a)
         else:
-            print "Found unknown algorithm '" + a + ""
+            print Log.info("Found unknown algorithm '" + a + ": excluding")
 
     # Pass things off to the wrangler
     
     # (Always load the stuff from aaindex2,3)
+    Log.info("DF size: "+str(len(wekaData.getDefaultFeatures())))
     w = Wrangler.Wrangler(wekaData)
     w.populateWekaData()
-    
     # Now have the WekaPrimer write the appropriate files
 
     # Pass things off to weka using the weka CLI
@@ -102,28 +103,64 @@ def printHelp():
     
     ----------------------------------------------------------------------------
     
+    log := Change log settings for the running application. Available commands
+           are as follows:
+           
+           Enable log:       log enable
+           Disable log:      log disable
+           Change log level: log set level [debug, info, warn, error]
+           Change output:    log set output [stdout, file]
+           Change log file:  log set file <filename.log>
+           
+    
+    
+    ----------------------------------------------------------------------------
+    
     exit := exit the program
     
     """
 
+def updateLog(argv):
+
+    command = argv[0]
+
+    if command == "set":
+        option = argv[1]
+        if option == "level":
+            Log.set_log_level(argv[2].lower())
+        elif option == "output":
+            Log.set_destination(argv[2].lower())
+        elif option == "file":
+            Log.set_file(argv[2].lower())
+
+    if command == "enable":
+        Log.enable()
+
+    elif command == "disable":
+        Log.disable()
+
 
 # Start program ----------------------------------------------------------------
 # All this will be happening inside a terminal like event loop
-while True:
+if __name__ == "__main__":
+    while True:
 
-    # Get the user inputted command
-    command = raw_input("VIA >> ")
-    argv = command.split()
+        # Get the user inputted command
+        command = raw_input("VIA >> ")
+        argv = command.split()
 
-    if argv[0] == "exit":
-        break
+        if argv[0] == "exit":
+            break
 
-    elif argv[0] == "run":
-        run(argv[1:])
+        elif argv[0] == "run":
+            run(argv[1:])
 
-    elif argv[0] == "help":
-        printHelp()
+        elif argv[0] == "help":
+            printHelp()
 
-    else:
-        print "Invalid command option, enter 'help' for a list of available" \
-              "command options"
+        elif argv[0] == "log":
+            updateLog(argv[1:])
+
+        else:
+            print "Invalid command option, enter 'help' for a list of available" \
+                  "command options"

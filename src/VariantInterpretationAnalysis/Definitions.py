@@ -14,11 +14,11 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 
 # List of available features to plug into Weka
 AVAILABLE_FEATURES = [
-    "x",
-    "y",
-    "z",
-    Feature("GENE_FAMILY", "geneFamilyData.txt")
+    "GENE_FAMILY"
 ]
+AVAILABLE_FEATURES_MAP = dict([
+    ("GENE_FAMILY","geneFamilyData.txt")])
+
 
 # List of default features the program will use if additional features aren't
 #  specified

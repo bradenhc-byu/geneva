@@ -14,8 +14,10 @@ class Mutation:
     RISK = 4
     UNKNOWN = 5
 
+    CLASSES = ['pathogenic', 'benign', 'conflicting', 'risk', 'unknown']
+
     def __init__(self, name, symbol="", index=-1, gene="NONE",
-                 clinical_significance="",
+                 clinical_significance=UNKNOWN,
                  rs_num=-1):
         """
         Represents data about a gene mutation from the cleaned_variants file
@@ -46,9 +48,7 @@ class Mutation:
 
     def get_symbol(self, two=False):
         if two:
-            part1=self.__symbol[:3]
-            part2=self.__symbol[3:]
-            return (part1,part2)
+            return self.__symbol[0] + self.__symbol[3]
         else:
             return self.__symbol
 
@@ -116,12 +116,17 @@ class Mutation:
 # Contains feature name, location of source data
 # Used for storing non-default features
 class Feature:
-    def __init__(self, name, fileName = "DEFAULT"):
+
+    STRING_TYPE = "string"
+    NUMERIC_TYPE = "numeric"
+
+    def __init__(self, name, fileName = "DEFAULT", dataType=NUMERIC_TYPE):
         if fileName == "DEFAULT":
             fileName = name + '.txt'
 
         self.__name = name
         self.__fileName = fileName
+        self.dataType = dataType
 
 
 ################################################################################
@@ -133,6 +138,8 @@ class Feature:
 # Since we are dealing with very large sets of data, this class uses
 # the Pandas data structure
 #
+import copy
+
 class WekaData:
 
     def __init__(self):
@@ -144,6 +151,23 @@ class WekaData:
         
     def getDefaultFeatures(self):
         return self.__defaultFeatures
+
+    def setDefaultFeatures(self, defaultFeatures):
+        self.__defaultFeatures = copy.deepcopy(defaultFeatures)
+        return True
+
+    def addDefaultFeature(self, feature):
+        if feature not in self.__defaultFeatures:
+            self.__defaultFeatures.append(feature)
+            return True
+        return False
+
+    def getDefaultFeatureMap(self):
+        return self.__defaultFeatureMap
+
+    def setDefaultFeatureMap(self, defaultFeatureMap):
+        self.__defaultFeatureMap = copy.deepcopy(defaultFeatureMap)
+        return True
 
     def getMutations(self):
         return self.__mutations
