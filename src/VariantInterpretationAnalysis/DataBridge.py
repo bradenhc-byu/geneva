@@ -84,7 +84,8 @@ class DataBridge:
         f.write(text)
         f.close()
 
-    def openFromFile(self, filename):
+    @staticmethod
+    def openFromFile(filename):
         return eval(open(filename, 'r').read())
 
     @staticmethod    
@@ -109,13 +110,17 @@ class DataBridge:
         for gene in genes:
             i = i+1
             j = j+1
-            geneId = DataBridge.download("GENE_ID",gene)
-            geneFamily = DataBridge.download("GENE_FAMILY", geneId[0])
-            print str(i)+" Gene: "+str(gene)+". GeneID "+str(geneId[0])+" GeneFamily: " + str(geneFamily)
-            map[gene] = geneFamily
-            if i > 20:
-                DataBridge.saveToFile(str(map), filename)
-                i=0
+                
+            try:
+                geneId = DataBridge.download("GENE_ID",gene)
+                geneFamily = DataBridge.download("GENE_FAMILY", geneId[0])
+                print str(j)+" "+str(j)+" Gene: "+str(gene)+". GeneID "+str(geneId[0])+" GeneFamily: " + str(geneFamily)
+                map[gene] = geneFamily
+                if i > 20:
+                    DataBridge.saveToFile(str(map), filename)
+                    i=0
+            finally:
+                i = i
         DataBridge.saveToFile(str(map), filename)
 
     loadDispatcher = {
@@ -126,7 +131,7 @@ class DataBridge:
     def loadMap(feature, filename, params):
         if not os.path.exists(filename):
             DataBridge.loadDispatcher[feature](filename,params)
-        myMap = self.openFromFile(filename)
+        myMap = DataBridge.openFromFile(filename)
         print str(myMap)
         return myMap
 
