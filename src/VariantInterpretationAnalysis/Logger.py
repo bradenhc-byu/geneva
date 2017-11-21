@@ -22,65 +22,93 @@ OUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 MESSAGE_PREFIX = "{0} ".format(datetime.datetime.fromtimestamp(time.time())
                               .strftime('%Y-%m-%d %H:%M:%S'))
 
-# Singleton variables
-logger_level = LEVEL_DEBUG
-logger_destination = DEST_STDOUT
-logger_output_file = OUT_FILE
+
+class LogSettings:
+    def __init__(self):
+        self.level = LEVEL_DEBUG
+        self.destination = DEST_STDOUT
+        self.output_file = OUT_FILE
+        self.enabled = True
+
+log_settings = LogSettings()
 
 # Create the log file if it doesn't exist
 if not os.path.exists(OUT_FILE):
     f = open(OUT_FILE, "w+")
     f.close()
 
-def set_log_level(level):
-    if level < LEVEL_DEBUG or level > LEVEL_ERROR:
+def enable(settings=log_settings):
+    settings.enabled = True
+
+def disable(settings=log_settings):
+    settings.enabled = False
+
+def set_log_level(level, settings=log_settings):
+    levels = {
+        "debug": LEVEL_DEBUG,
+        "info": LEVEL_INFO,
+        "warn": LEVEL_WARN,
+        "error": LEVEL_ERROR
+    }
+    if level not in levels.keys():
         return False
-    logger_level = level
+    settings.level = levels[level]
     return True
 
-def set_destination(dest):
-    if dest != DEST_STDOUT \
-       or dest != DEST_FILE:
+def set_destination(dest, settings=log_settings):
+    destinations = {
+        "stdout": DEST_STDOUT,
+        "file": DEST_FILE
+    }
+    if dest not in destinations.keys():
         return False
-    logger_destination = dest
+    settings.destination = destinations[dest]
     return True
 
-def debug(message):
-    if logger_level == LEVEL_DEBUG:
+def set_file(log_file, settings=log_settings):
+    if not os.path.exists(log_file):
+        new_file = open(log_file, "w+")
+        new_file.close()
+    settings.output_file = log_file
+    return True
+
+
+def debug(message, settings=log_settings):
+    if settings.level == LEVEL_DEBUG and settings.enabled:
         log_message = MESSAGE_PREFIX + "[DEBUG]: " + message
-        if logger_destination == DEST_STDOUT:
+        if settings.destination == DEST_STDOUT:
             print log_message
         else:
-            outfile = open(logger_output_file, "a")
+            outfile = open(settings.output_file, "a")
             outfile.write(log_message + "\n")
             outfile.close()
 
-def info(message):
-    if logger_level <= LEVEL_INFO:
+def info(message, settings=log_settings):
+    if settings.level <= LEVEL_INFO and settings.enabled:
         log_message = MESSAGE_PREFIX + "[INFO]: " + message
-        if logger_destination == DEST_STDOUT:
+        if settings.destination == DEST_STDOUT:
             print log_message
         else:
-            outfile = open(logger_output_file, "a")
+            outfile = open(settings.output_file, "a")
             outfile.write(log_message + "\n")
             outfile.close()
 
-def warn(message):
-    if logger_level <= LEVEL_WARN:
+def warn(message, settings=log_settings):
+    if settings.level <= LEVEL_WARN and settings.enabled:
         log_message = MESSAGE_PREFIX + "[WARN]: " + message
-        if logger_destination == DEST_STDOUT:
+        if settings.destination == DEST_STDOUT:
             print log_message
         else:
-            outfile = open(logger_output_file, "a")
+            outfile = open(settings.output_file, "a")
             outfile.write(log_message + "\n")
             outfile.close()
 
-def error(message):
-    if logger_level <= LEVEL_ERROR:
+def error(message, settings=log_settings):
+    if settings.level <= LEVEL_ERROR and settings.enabled:
         log_message = MESSAGE_PREFIX + "[ERROR]: " + message
-        if logger_destination == DEST_STDOUT:
+        if settings.destination == DEST_STDOUT:
             print log_message
         else:
-            outfile = open(logger_output_file, "a")
+            outfile = open(settings.output_file, "a")
             outfile.write(log_message + "\n")
             outfile.close()
