@@ -11,6 +11,7 @@ from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES,AVAILABLE_FE
 from Collections import Mutation
 import Parser
 import os
+import DataBridge
 
 class Wrangler:
     def __init__(self, wekaData):
@@ -64,7 +65,6 @@ class Wrangler:
             # if it isn't, download
             if not os.path.exists(feature_path):
                 print "Does NOT exist"
-            
 
             # call parser on feature
             dataMap = Parser.parse(feature)
