@@ -52,7 +52,7 @@ def run(argv):
         if a in AVAILABLE_ALGORITHMS:
             wekaData.addAlgorithm(a)
         else:
-            print Log.info("Found unknown algorithm '" + a + ": excluding")
+            print Log.info("Found unknown algorithm '" + a + "': excluding")
 
     # Pass things off to the wrangler
     

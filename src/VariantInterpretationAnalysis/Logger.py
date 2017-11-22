@@ -19,7 +19,8 @@ LEVEL_ERROR = 3
 OUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "out.log")
 
-MESSAGE_PREFIX = "{0} ".format(datetime.datetime.fromtimestamp(time.time())
+def message_prefix():
+    return "{0} ".format(datetime.datetime.fromtimestamp(time.time())
                               .strftime('%Y-%m-%d %H:%M:%S'))
 
 
@@ -75,7 +76,7 @@ def set_file(log_file, settings=log_settings):
 
 def debug(message, settings=log_settings):
     if settings.level == LEVEL_DEBUG and settings.enabled:
-        log_message = MESSAGE_PREFIX + "[DEBUG]: " + message
+        log_message = message_prefix() + "[DEBUG]: " + message
         if settings.destination == DEST_STDOUT:
             print log_message
         else:
@@ -85,7 +86,7 @@ def debug(message, settings=log_settings):
 
 def info(message, settings=log_settings):
     if settings.level <= LEVEL_INFO and settings.enabled:
-        log_message = MESSAGE_PREFIX + "[INFO]: " + message
+        log_message = message_prefix() + "[INFO]: " + message
         if settings.destination == DEST_STDOUT:
             print log_message
         else:
@@ -95,7 +96,7 @@ def info(message, settings=log_settings):
 
 def warn(message, settings=log_settings):
     if settings.level <= LEVEL_WARN and settings.enabled:
-        log_message = MESSAGE_PREFIX + "[WARN]: " + message
+        log_message = message_prefix() + "[WARN]: " + message
         if settings.destination == DEST_STDOUT:
             print log_message
         else:
@@ -105,7 +106,7 @@ def warn(message, settings=log_settings):
 
 def error(message, settings=log_settings):
     if settings.level <= LEVEL_ERROR and settings.enabled:
-        log_message = MESSAGE_PREFIX + "[ERROR]: " + message
+        log_message = message_prefix() + "[ERROR]: " + message
         if settings.destination == DEST_STDOUT:
             print log_message
         else:

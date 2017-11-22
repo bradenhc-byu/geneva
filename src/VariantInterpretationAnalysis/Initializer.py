@@ -23,11 +23,9 @@ def get_aaindex2_data(data):
     for mutation in data.getMutations():
         for feature in default_features:
             feature_key = feature + ":" + mutation.get_symbol(two=True)
-            try:
-                mutation.add_feature(feature,
-                                     str(default_feature_map[feature_key]))
-            except:
-                mutation.add_feature(feature, str(0))
+            feature_value = default_feature_map.get(feature_key, "0")
+            mutation.add_feature(feature, feature_value)
+
     data.setDefaultFeatures(default_features)
     data.setDefaultFeatureMap(default_feature_map)
     return
