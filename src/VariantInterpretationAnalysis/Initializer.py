@@ -43,7 +43,7 @@ def init_weka_data(filename):
                 mutation = MutationInfoParser.parse_mutation(line)
                 data.addMutation(mutation)
         Log.info("Getting default features")
-        #get_aaindex2_data(data)
+        get_aaindex2_data(data)
         Log.info("Initialization complete!")
         return data
     else:

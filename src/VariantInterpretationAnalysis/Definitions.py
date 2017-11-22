@@ -23,8 +23,8 @@ AVAILABLE_FEATURES_MAP = dict([
 # List of default features the program will use if additional features aren't
 #  specified
 DEFAULT_FEATURES = [
-    "GENE_FAMILY"
 ]
+#   "GENE_FAMILY"
 
 # List of available algorithms to use in Weka
 AVAILABLE_ALGORITHMS = [
