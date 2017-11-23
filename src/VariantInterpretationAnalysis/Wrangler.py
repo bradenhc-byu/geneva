@@ -37,7 +37,7 @@ class Wrangler:
 
     # dict of feature type to function
     dispatcher = {
-        #"GENE_FAMILY": addGeneFamilyToMutation(),
+        "GENE_FAMILY": addGeneFamilyToMutation,
         #"y": addYToMutation()
     }
 
@@ -61,14 +61,8 @@ class Wrangler:
         for feature in self.__wekaData.getFeatures():
             feature_path=AVAILABLE_FEATURES_MAP.get(feature)
 
-            # check if file is there
-            # if it isn't, download
-            if not os.path.exists(feature_path):
-                print "Does NOT exist"
-
-            # call parser on feature
-            dataMap = Parser.parse(feature)
-
-            addFeature = Wrangler.dispatcher[feature]
+            dataMap = DataBridge.DataBridge.loadMap(feature, AVAILABLE_FEATURES_MAP[feature], self.__wekaData.getMutations())
+            
+            addFeature = Wrangler.dispatcher[f]
             for m in self.__wekaData.getMutations():
                 addFeature(m, dataMap)

@@ -3,7 +3,7 @@
 #
 #
 import os
-from Collections import Feature
+#from Collections import Feature
 
 
 # Root directory of the program
@@ -24,6 +24,7 @@ AVAILABLE_FEATURES_MAP = dict([
 #  specified
 DEFAULT_FEATURES = [
 ]
+#   "GENE_FAMILY"
 
 # List of available algorithms to use in Weka
 AVAILABLE_ALGORITHMS = [
