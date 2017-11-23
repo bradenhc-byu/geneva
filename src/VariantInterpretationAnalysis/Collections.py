@@ -3,7 +3,7 @@
 #
 # Holds key,value pairs for features associated with this mutation
 #
-
+from Definitions import AMINO_ACIDS_3_1
 
 class Mutation:
 
@@ -48,7 +48,11 @@ class Mutation:
 
     def get_symbol(self, two=False):
         if two:
-            return self.__symbol[0] + self.__symbol[3]
+            part1=self.__symbol[:3]
+            part2=self.__symbol[3:]
+            X = AMINO_ACIDS_3_1.get(part1, "?")
+            Y = AMINO_ACIDS_3_1.get(part2, "?")
+            return X + Y
         else:
             return self.__symbol
 
@@ -127,6 +131,12 @@ class Feature:
         self.__name = name
         self.__fileName = fileName
         self.dataType = dataType
+
+    def get_name(self):
+        return self.__name
+
+    def get_fileName(self):
+        return self.__fileName
 
 
 ################################################################################

@@ -14,20 +14,16 @@ def get_aaindex2_data(data):
     (default_feature_map, default_features) = aaindex2parser.parse()
 
     # Add the features to the weka data feature list
-    for feature in default_features:
-        data.addFeature(Feature(feature,
-                                feature+".txt",
-                                dataType=Feature.NUMERIC_TYPE))
+    #for feature in default_features:
+    #    data.addFeature(Feature(feature,
+    #                            feature+".txt",
+    #                            dataType=Feature.NUMERIC_TYPE))
 
     # Add all the features to the mutations in the WekaData object
     for mutation in data.getMutations():
         for feature in default_features:
             feature_key = feature + ":" + mutation.get_symbol(two=True)
-            try:
-                mutation.add_feature(feature,
-                                     str(default_feature_map[feature_key]))
-            except:
-                mutation.add_feature(feature, str(0))
+            mutation.add_feature(feature, str(default_feature_map.get(feature_key, "?")))
     data.setDefaultFeatures(default_features)
     data.setDefaultFeatureMap(default_feature_map)
     return
