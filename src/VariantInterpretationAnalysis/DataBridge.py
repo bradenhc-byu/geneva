@@ -7,6 +7,7 @@
 import httplib2 as http
 import json
 import os
+import re
 try: 
     from urlparse import urlparse
 except ImportError:
@@ -71,7 +72,7 @@ class DataBridge:
         return data2
 
     @staticmethod
-    def getUIDRequest(rsNum):
+    def getSearchRequest(rsNum):
         headers = {}
         uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=' + rsNum
 
@@ -81,7 +82,12 @@ class DataBridge:
         return (target, method, body, headers)
 
     @staticmethod
-    def getUIDCallback(content):
+    def getSearchCallback(content):
+        # $web = $1 if ($output = ~ / < WebEnv > (\S +) < \ / WebEnv > / );
+        # $key = $1 if ($output = ~ / < QueryKey > (\d +) < \ / QueryKey > / );
+        webEnv = re.search(r"<WebEnv>(\S+)</WebEnv>").group(1)
+        queryKey = re.search(r"<QueryKey>(\d+)</QueryKey>").group(1)
+        return webEnv, queryKey
 
 
     requestDispatcher = {
@@ -157,6 +163,13 @@ class DataBridge:
     def loadGenomicLocation(mutations):
         for m in mutations:
             if m.__chr == -1: continue
+            (target, method, body, headers) = DataBridge.getSearchRequest(m)
+            h = http.Http()
+            response, content = h.request(target.geturl(), method, body, headers)
+            if response['status'] == '200':
+                queryKey, webEnv = DataBridge.getSearchCallback(content)
+            else:
+                print 'Error detected: ' + response['status']
 
 
 
