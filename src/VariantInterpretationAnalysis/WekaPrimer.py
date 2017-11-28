@@ -28,6 +28,8 @@ def write_to_file(weka_data, out_filename):
     out_file.write(relation)
 
     # Write the attributes
+    for f in weka_data.getDefaultFeatures():
+        out_file.write("@attribute " + f + " " + "real" + "\n")
     for f in weka_data.getFeatures():
         out_file.write("@attribute " + f.get_name() + " " + f.get_datatype() +
                        "\n")
