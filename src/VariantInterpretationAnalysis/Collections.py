@@ -88,10 +88,7 @@ class Mutation:
         return True
 
     def get_feature(self, feature):
-        if feature in self.__features.keys():
-            return self.__features[feature]
-        else:
-            return None
+        return self.__features.get(feature, None)
 
     def __str__(self):
         out_string = str(self.__name) + "\t" + \
