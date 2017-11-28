@@ -10,3 +10,6 @@
 # Ignore all optimizd and compiled Python byte code
 **__pycache__/
 **.py[cod]
+
+# Ignore the configuration files
+src/VariantInterpretationAnalysis/genevia.config
