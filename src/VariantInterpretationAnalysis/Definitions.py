@@ -17,14 +17,14 @@ AVAILABLE_FEATURES = [
     "GENE_FAMILY"
 ]
 AVAILABLE_FEATURES_MAP = dict([
-    ("GENE_FAMILY","geneFamilyData.txt")])
+    ("GENE_FAMILY","VariantInterpretationAnalysis/data/geneFamilyData.txt")])
 
 
 # List of default features the program will use if additional features aren't
 #  specified
 DEFAULT_FEATURES = [
+   "GENE_FAMILY"
 ]
-#   "GENE_FAMILY"
 
 # List of available algorithms to use in Weka
 AVAILABLE_ALGORITHMS = {
