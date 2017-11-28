@@ -5,11 +5,11 @@
 # magic starts.
 #
 
-# Import required files
+# Import the required files
 import VariantInterpretationAnalysis.Logger as Log
 from VariantInterpretationAnalysis.Definitions import *
-from VariantInterpretationAnalysis.Collections import WekaData
-# Import components/classes
+from VariantInterpretationAnalysis.Collections import WekaData, Feature
+# Import the components/classes
 from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis import WekaPrimer
@@ -54,10 +54,12 @@ def run(argv):
     # Initialize the Weka Data
     wekaData = WekaData()
     Initializer.init_weka_data(wekaData)
-    
+
     for f in features:
         if f in AVAILABLE_FEATURES.keys():
-            wekaData.addFeature(AVAILABLE_FEATURES[f])
+            f_args = AVAILABLE_FEATURES[f]
+            f_obj = Feature(f_args[0], f_args[1], f_args[2])
+            wekaData.addFeature(f_obj)
         else:
             print Log.info("Found unknown feature '" + f + "': excluding")
 

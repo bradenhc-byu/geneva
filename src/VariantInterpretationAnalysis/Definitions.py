@@ -3,7 +3,6 @@
 #
 #
 import os
-from Collections import Feature
 
 
 # Root directory of the program
@@ -13,12 +12,15 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, "data/")
 
 # List of available features to plug into Weka
+# Format is "<key>": (<name>, <filepath>, <data type>)
 AVAILABLE_FEATURES = {
-    "GENE_FAMILY": Feature("GENE_FAMILY", DATA_DIR + "geneFamilyData.txt",
-                           dataType=Feature.STRING_TYPE)
+    "gene-family": ("GENE_FAMILY",
+                    DATA_DIR + "geneFamilyData.txt",
+                    "string")
 }
 
 # List of available algorithms to use in Weka
+# Format is "<key>": "string java class object"
 AVAILABLE_ALGORITHMS = {
     "random-tree": "weka.classifiers.trees.RandomTree",
     "bayes-net": "weka.classifiers.bayes.BayesNet",

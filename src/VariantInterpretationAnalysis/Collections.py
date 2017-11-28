@@ -138,7 +138,6 @@ class Feature:
     def get_datatype(self):
         return self.__data_type
 
-
 ################################################################################
 # WekaData - Data Structure
 #
@@ -155,7 +154,6 @@ class WekaData:
     def __init__(self):
         self.__mutations = list()
         self.__defaultFeatures = list()
-        self.__defaultFeatureMap = {}
         self.__features = list()
         self.__algorithms = list()
         
@@ -171,13 +169,6 @@ class WekaData:
             self.__defaultFeatures.append(feature)
             return True
         return False
-
-    def getDefaultFeatureMap(self):
-        return self.__defaultFeatureMap
-
-    def setDefaultFeatureMap(self, defaultFeatureMap):
-        self.__defaultFeatureMap = copy.deepcopy(defaultFeatureMap)
-        return True
 
     def getMutations(self):
         return self.__mutations
