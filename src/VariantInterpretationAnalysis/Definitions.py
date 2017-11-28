@@ -3,7 +3,7 @@
 #
 #
 import os
-#from Collections import Feature
+from Collections import Feature
 
 
 # Root directory of the program
@@ -13,18 +13,10 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, "data/")
 
 # List of available features to plug into Weka
-AVAILABLE_FEATURES = [
-    "GENE_FAMILY"
-]
-AVAILABLE_FEATURES_MAP = dict([
-    ("GENE_FAMILY","VariantInterpretationAnalysis/data/geneFamilyData.txt")])
-
-
-# List of default features the program will use if additional features aren't
-#  specified
-DEFAULT_FEATURES = [
-   "GENE_FAMILY"
-]
+AVAILABLE_FEATURES = {
+    "GENE_FAMILY": Feature("GENE_FAMILY", DATA_DIR + "geneFamilyData.txt",
+                           dataType=Feature.STRING_TYPE)
+}
 
 # List of available algorithms to use in Weka
 AVAILABLE_ALGORITHMS = {

@@ -19,7 +19,7 @@ from VariantInterpretationAnalysis import WekaController
 def run(argv):
 
     # Instantiate variables
-    features = DEFAULT_FEATURES
+    features = AVAILABLE_FEATURES.keys()
     algorithms = AVAILABLE_ALGORITHMS.keys()
     testMutation = ""
     loadFromCloud = False
@@ -56,14 +56,14 @@ def run(argv):
     Initializer.init_weka_data(wekaData)
     
     for f in features:
-        if f in AVAILABLE_FEATURES:
-            wekaData.addFeature(f)
+        if f in AVAILABLE_FEATURES.keys():
+            wekaData.addFeature(AVAILABLE_FEATURES[f])
         else:
             print Log.info("Found unknown feature '" + f + "': excluding")
 
     for a in algorithms:
-        if a in AVAILABLE_ALGORITHMS:
-            wekaData.addAlgorithm(a)
+        if a in AVAILABLE_ALGORITHMS.keys():
+            wekaData.addAlgorithm(AVAILABLE_ALGORITHMS[a])
         else:
             print Log.info("Found unknown algorithm '" + a + "': excluding")
 
@@ -71,8 +71,8 @@ def run(argv):
     
     # (Always load the stuff from aaindex2,3)
     Log.info("DF size: "+str(len(wekaData.getDefaultFeatures())))
-    w = Wrangler.Wrangler(wekaData)
-    w.populateWekaData()
+    #w = Wrangler.Wrangler(wekaData)
+    #w.populateWekaData()
 
     # Now have the WekaPrimer write the appropriate files
     WekaPrimer.write_to_file(wekaData, saveFile)

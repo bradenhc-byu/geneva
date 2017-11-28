@@ -9,7 +9,7 @@
 # or try findstr if grep does not work
 #
 import Logger as Log
-from Definitions import DATA_DIR, AVAILABLE_ALGORITHMS
+from Definitions import DATA_DIR
 import os
 
 
@@ -24,11 +24,10 @@ def run_weka(weka_data, weka_file):
         classifier_algorithms = weka_data.getAlgorithms()
         if classifier_algorithms:
             for algorithm in classifier_algorithms:
-                java_algorithm = AVAILABLE_ALGORITHMS[algorithm]
-                Log.info("Running " + java_algorithm + "...")
-                results_file.write(java_algorithm + "--------------\n")
+                Log.info("Running " + algorithm + "...")
+                results_file.write(algorithm + "--------------\n")
                 tmp_output = "./tmp_output"
-                command = build_command(java_algorithm, weka_file, tmp_output)
+                command = build_command(algorithm, weka_file, tmp_output)
                 os.system(command)
                 with open(tmp_output, "r") as tmp_output_file:
                     for tmp_result_line in tmp_output_file:
