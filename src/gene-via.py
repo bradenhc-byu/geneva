@@ -8,6 +8,7 @@
 # Import required files
 from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
+from VariantInterpretationAnalysis import WekaPrimer
 from VariantInterpretationAnalysis.Definitions import *
 import VariantInterpretationAnalysis.Logger as Log
 
@@ -61,7 +62,7 @@ def run(argv):
     w = Wrangler.Wrangler(wekaData)
     w.populateWekaData()
     # Now have the WekaPrimer write the appropriate files
-
+    WekaPrimer.write_to_file(wekaData,DATA_DIR + "test_weka_output2.arff")
     # Pass things off to weka using the weka CLI
 
     # Get our return value

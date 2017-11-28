@@ -5,7 +5,7 @@
 # that the Weka machine learning program can use
 #
 from Collections import WekaData, Mutation, Feature
-from Definitions import DATA_DIR
+from Definitions import DATA_DIR,AVAILABLE_FEATURES_DATATYPE_MAP
 import Logger as Log
 
 
@@ -19,8 +19,11 @@ def write_to_file(weka_data, out_filename):
     out_file.write(relation)
 
     # Write the attributes
+    for f in weka_data.getDefaultFeatures():
+        out_file.write("@attribute " + f + " " + "real" + "\n")
     for f in weka_data.getFeatures():
-        out_file.write("@attribute " + f.name + " " + f.dataType + "\n")
+        dataType = AVAILABLE_FEATURES_DATATYPE_MAP[f]
+        out_file.write("@attribute " + f + " " + dataType + "\n")
     out_file.write("@attribute class {" + ",".join(Mutation.CLASSES) + "}\n")
 
     # Write the data
@@ -28,7 +31,10 @@ def write_to_file(weka_data, out_filename):
     for mutation in weka_data.getMutations():
         data_line = []
         for key, value in mutation.get_features().iteritems():
-            data_line.append(str(value))
+            if AVAILABLE_FEATURES_DATATYPE_MAP.get(key) == "string" and str(value) != "?":
+                data_line.append("\""+str(value)+"\"")
+            else:
+                data_line.append(str(value))
         out_file.write(",".join(data_line) + "," +
                        mutation.get_clinical_significance() + "\n")
 
