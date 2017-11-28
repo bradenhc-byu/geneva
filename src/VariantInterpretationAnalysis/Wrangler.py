@@ -28,8 +28,8 @@ class Wrangler:
     #    mutation.add_feature(feature,value)
     #    return True
 
-    def addGeneFamilyToMutation(self, mutation, gfMap):
-        mutation.add_feature("GENE_FAMILY", gfMap[mutation.__gene])
+    def addGeneFamilyToMutation(mutation, gfMap):
+        mutation.add_feature("GENE_FAMILY", gfMap.get(mutation.get_gene(),"?"))
         return True
 
     def addYToMutation(self, mutation):
@@ -63,6 +63,6 @@ class Wrangler:
 
             dataMap = DataBridge.DataBridge.loadMap(feature, AVAILABLE_FEATURES_MAP[feature], self.__wekaData.getMutations())
             
-            addFeature = Wrangler.dispatcher[f]
+            addFeature = Wrangler.dispatcher[feature]
             for m in self.__wekaData.getMutations():
                 addFeature(m, dataMap)
