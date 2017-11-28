@@ -16,8 +16,10 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 AVAILABLE_FEATURES = [
     "GENE_FAMILY"
 ]
-AVAILABLE_FEATURES_MAP = dict([
+AVAILABLE_FEATURES_PATH_MAP = dict([
     ("GENE_FAMILY","VariantInterpretationAnalysis/data/geneFamilyData.txt")])
+AVAILABLE_FEATURES_DATATYPE_MAP = dict([
+    ("GENE_FAMILY","string")])
 
 
 # List of default features the program will use if additional features aren't
