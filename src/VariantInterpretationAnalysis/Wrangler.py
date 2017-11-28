@@ -46,6 +46,7 @@ class Wrangler:
     }
 
     def populateWekaData(self):
+        # This is now done in the Initializer
         #for df in self.__wekaData.getDefaultFeatures():
         #    for m in self.__wekaData.getMutations():
         #        self.addDefaultFeatureToMutation(df, m)
