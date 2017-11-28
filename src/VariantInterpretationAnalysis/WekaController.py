@@ -9,12 +9,14 @@
 # or try findstr if grep does not work
 #
 import Logger as Log
-from Definitions import DATA_DIR
+from Definitions import DATA_DIR, ROOT_DIR
+import Configuration
 import os
 
 
 def run_weka(weka_data, weka_file):
-    if os.path.exists(weka_file):
+    filepath = DATA_DIR + weka_file
+    if os.path.exists(filepath):
         Log.info("Pushing data to weka...")
         results_file = open(DATA_DIR + "weka_results.txt", "w")
         results_file.write("WEKA RESULTS ================================\n\n")
@@ -27,7 +29,9 @@ def run_weka(weka_data, weka_file):
                 Log.info("Running " + algorithm + "...")
                 results_file.write(algorithm + "--------------\n")
                 tmp_output = "./tmp_output"
-                command = build_command(algorithm, weka_file, tmp_output)
+                command = build_command(algorithm, filepath, tmp_output)
+                if command is None:
+                    return False
                 os.system(command)
                 with open(tmp_output, "r") as tmp_output_file:
                     for tmp_result_line in tmp_output_file:
@@ -36,13 +40,18 @@ def run_weka(weka_data, weka_file):
         else:
             Log.error("Unable to run weka: no specified algorithms")
     else:
-        Log.error("Unable to run weka: file does not exist")
-    return False
+        Log.error("Unable to run weka: file'" + filepath + "' does not exist")
+    return True
 
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
-    return "java -cp ./weka.jar {0} -t {1} -v | grep Correctly > " \
-           "{2}".format(algorithm, weka_file, result_file)
+    weka_path = Configuration.getConfig("weka_path")
+    if weka_path is None:
+        Log.error("Unable to build Weka command: weka path not set")
+        return None
+    return "java -cp {0} {1} -t {2} -v | grep Correctly > " \
+           "{3}".format(weka_path, algorithm, weka_file, result_file)
+
 
 
 
@@ -56,4 +65,8 @@ def unit_test():
     weka_file = "genevia_default.arff"
     weka_data = WekaData()
     Initializer.init_weka_data(weka_data, filename=weka_file)
+
+if __name__ == "__main__":
+    Configuration.init("genevia.config")
+    unit_test()
 

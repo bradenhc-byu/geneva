@@ -14,6 +14,7 @@ from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis import WekaPrimer
 from VariantInterpretationAnalysis import WekaController
+from VariantInterpretationAnalysis import Configuration
 
 
 def run(argv):
@@ -73,8 +74,8 @@ def run(argv):
     
     # (Always load the stuff from aaindex2,3)
     Log.info("DF size: "+str(len(wekaData.getDefaultFeatures())))
-    #w = Wrangler.Wrangler(wekaData)
-    #w.populateWekaData()
+    w = Wrangler.Wrangler(wekaData)
+    w.populateWekaData()
 
     # Now have the WekaPrimer write the appropriate files
     WekaPrimer.write_to_file(wekaData, saveFile)
@@ -165,6 +166,10 @@ def updateLog(argv):
 # Start program ----------------------------------------------------------------
 # All this will be happening inside a terminal like event loop
 if __name__ == "__main__":
+
+    # Initialize configuration
+    Configuration.init("genevia.config")
+
     while True:
 
         # Get the user inputted command
