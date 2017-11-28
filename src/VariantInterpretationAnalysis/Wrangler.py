@@ -7,7 +7,7 @@
 #
 # Returns populated WekaData object
 
-from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES,AVAILABLE_FEATURES_PATH_MAP,AVAILABLE_FEATURES_DATATYPE_MAP
+from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES
 from Collections import Mutation
 import Parser
 import os
@@ -59,9 +59,10 @@ class Wrangler:
         
 
         for feature in self.__wekaData.getFeatures():
-            feature_path=AVAILABLE_FEATURES_PATH_MAP.get(feature)
+            feature_path = feature.get_fileName()
 
-            dataMap = DataBridge.DataBridge.loadMap(feature, AVAILABLE_FEATURES_PATH_MAP[feature], self.__wekaData.getMutations())
+            dataMap = DataBridge.DataBridge.loadMap(feature, feature_path,
+                                                    self.__wekaData.getMutations())
             
             addFeature = Wrangler.dispatcher[feature]
             for m in self.__wekaData.getMutations():

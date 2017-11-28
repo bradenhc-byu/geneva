@@ -5,7 +5,7 @@
 # that the Weka machine learning program can use
 #
 from Collections import WekaData, Mutation, Feature
-from Definitions import DATA_DIR,AVAILABLE_FEATURES_DATATYPE_MAP
+from Definitions import DATA_DIR
 import Logger as Log
 
 
@@ -21,7 +21,7 @@ def write_to_file(weka_data, out_filename):
     """
     Log.info("Writing WekaData object to file in ARFF format")
     # Initialize the file
-    out_file = open(out_filename, "w")
+    out_file = open(DATA_DIR + out_filename, "w")
 
     # Write the relation
     relation = "@relation mutationvariants\n\n"
@@ -31,8 +31,8 @@ def write_to_file(weka_data, out_filename):
     for f in weka_data.getDefaultFeatures():
         out_file.write("@attribute " + f + " " + "real" + "\n")
     for f in weka_data.getFeatures():
-        dataType = AVAILABLE_FEATURES_DATATYPE_MAP[f]
-        out_file.write("@attribute " + f + " " + dataType + "\n")
+        out_file.write("@attribute " + f.get_name() + " " + f.get_datatype() +
+                       "\n")
     out_file.write("@attribute class {" + ",".join(Mutation.CLASSES) + "}\n")
 
     # Write the data
@@ -40,9 +40,9 @@ def write_to_file(weka_data, out_filename):
     for mutation in weka_data.getMutations():
         data_line = []
         for feature in weka_data.getFeatures():
-            value = mutation.get_feature(feature.name)
+            value = mutation.get_feature(feature.get_name())
             if value is None:
-                value = "0" if f.dataType == Feature.NUMERIC_TYPE else "?"
+                value = "0" if f.get_datatype() == Feature.NUMERIC_TYPE else "?"
             data_line.append(str(value))
         out_file.write(",".join(data_line) + "," +
                        mutation.get_clinical_significance() + "\n")
