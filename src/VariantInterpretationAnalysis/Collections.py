@@ -18,7 +18,7 @@ class Mutation:
 
     def __init__(self, name, symbol="", index=-1, gene="NONE",
                  clinical_significance=UNKNOWN,
-                 rs_num=-1):
+                 rs_num=-1, chromosome=-1, chrIndex = -1):
         """
         Represents data about a gene mutation from the cleaned_variants file
 
@@ -39,6 +39,8 @@ class Mutation:
         self.__clinical_sig = clinical_significance
         self.__rs_num = rs_num
         self.__features = dict()
+        self.__chromosome = chromosome
+        self.__chrIndex = chrIndex
 
     def get_id(self):
         return self.__name

@@ -13,7 +13,7 @@ except ImportError:
     from urllib.parse import urlparse
 from Collections import Mutation,Feature
 import pyodbc
-
+import mysql.connector
 
 
 class DataBridge:
@@ -70,9 +70,24 @@ class DataBridge:
         #print "GeneFamily: "+data2
         return data2
 
+    @staticmethod
+    def getUIDRequest(rsNum):
+        headers = {}
+        uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=' + rsNum
+
+        target = urlparse(uri)
+        method = 'GET'
+        body = ''
+        return (target, method, body, headers)
+
+    @staticmethod
+    def getUIDCallback(content):
+
+
     requestDispatcher = {
         "GENE_ID": getGeneIdRequest,
-        "GENE_FAMILY": getGeneFamilyRequest
+        "GENE_FAMILY": getGeneFamilyRequest,
+        "GENOMIC_LOCATION": getGenomicLocationRequest
     }
 
     callbackDispatcher = {
@@ -90,7 +105,7 @@ class DataBridge:
     def openFromFile(filename):
         return eval(open(filename, 'r').read())
 
-    @staticmethod    
+    @staticmethod
     def download(feature, mutations):
         (target, method, body, headers) = DataBridge.requestDispatcher[feature](mutations)
         h = http.Http()
@@ -112,9 +127,9 @@ class DataBridge:
         for gene in genes:
             i = i+1
             j = j+1
-                
+
             try:
-                geneId = DataBridge.download("GENE_ID",gene)
+                geneId = DataBridge.download("GENE_ID", gene)
                 geneFamily = DataBridge.download("GENE_FAMILY", geneId[0])
                 print str(j)+" "+str(j)+" Gene: "+str(gene)+". GeneID "+str(geneId[0])+" GeneFamily: " + str(geneFamily)
                 map[gene] = geneFamily
@@ -129,7 +144,7 @@ class DataBridge:
         "GENE_FAMILY": downloadGeneFamily,
     }
 
-    @staticmethod    
+    @staticmethod
     def loadMap(feature, filename, params):
         if not os.path.exists(filename):
             DataBridge.loadDispatcher[feature](filename,params)
@@ -138,8 +153,41 @@ class DataBridge:
         return myMap
 
 
+    @staticmethod
+    def loadGenomicLocation(mutations):
+        for m in mutations:
+            if m.__chr == -1: continue
+
+
+
+
+    @staticmethod
+    def downloadGerp(mutations, fileName):
+        # cnxn = pyodbc.connect('DRIVER={MySQL};SERVER=genome-mysql.soe.ucsc.edu;UID=genome;')
+        # cnxn = pyodbc.connect("Login Prompt=False;User ID=genome;Data Source=genome-mysql.soe.ucsc.edu;CHARSET=UTF8")
+        # cnxn.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
+        # cnxn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
+        # cnxn.setencoding(encoding='utf-8')
+        # cursor = cnxn.cursor()
+
+
+        cnx = mysql.connector.connect(user='genome',
+                                      host='genome-mysql.soe.ucsc.edu',
+                                      database='hg19')
+        cursor = cnx.cursor("SELECT ")
+
+        cnx.close()
+
+
+
     def unit_test(self):
         self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
 
-#d=DataBridge()
-#d.unit_test()
+
+def testGerp():
+    DataBridge.downloadGerp([Mutation("name", "ZNF513")])
+
+
+# d=DataBridge()
+# d.unit_test()
+testGerp()
