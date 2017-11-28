@@ -5,54 +5,70 @@
 # magic starts.
 #
 
-# Import required files
+# Import the required files
+import VariantInterpretationAnalysis.Logger as Log
+from VariantInterpretationAnalysis.Definitions import *
+from VariantInterpretationAnalysis.Collections import WekaData, Feature
+# Import the components/classes
 from VariantInterpretationAnalysis import Initializer
 from VariantInterpretationAnalysis import Wrangler
-from VariantInterpretationAnalysis.Definitions import *
-import VariantInterpretationAnalysis.Logger as Log
+from VariantInterpretationAnalysis import WekaPrimer
+from VariantInterpretationAnalysis import WekaController
+from VariantInterpretationAnalysis import Configuration
 
 
 def run(argv):
 
     # Instantiate variables
-    features = DEFAULT_FEATURES
-    algorithms = DEFAULT_ALGORITHMS
+    features = AVAILABLE_FEATURES.keys()
+    algorithms = AVAILABLE_ALGORITHMS.keys()
     testMutation = ""
     loadFromCloud = False
+    saveFile = "genevia_default.arff"
 
     # Parse the arguments if there are any
-    if argv:
-        for i in range(len(argv)):
-            if argv[i] == "-a":
-                algorithms = argv[i+1].split(",")
-                i += 1
+    try:
+        if argv:
+            for i in range(len(argv)):
+                if argv[i] == "-a":
+                    algorithms = argv[i+1].split(",")
+                    i += 1
 
-            elif argv[i] == "-f":
-                features = argv[i+1].split(",")
-                i += 1
+                elif argv[i] == "-f":
+                    features = argv[i+1].split(",")
+                    i += 1
 
-            elif argv[i] == "-m":
-                testMutation = argv[i+1]
-                i += 1
+                elif argv[i] == "-m":
+                    testMutation = argv[i+1]
+                    i += 1
 
-            elif argv[i] == "-l":
-                loadFromCloud = True
+                elif argv[i] == "-l":
+                    loadFromCloud = True
+
+                elif argv[i] == "-s":
+                    saveFile = argv[i+1]
+                    i += 1
+    except:
+        Log.error("Unable to execute incorrectly formatted command")
+        return False
 
     # Initialize the Weka Data
-    mutationsFile = DATA_DIR + "mutations_certain"
-    wekaData = Initializer.init_weka_data(mutationsFile)
-    
+    wekaData = WekaData()
+    Initializer.init_weka_data(wekaData)
+
     for f in features:
-        if f in AVAILABLE_FEATURES:
-            wekaData.addFeature(f)
+        if f in AVAILABLE_FEATURES.keys():
+            f_args = AVAILABLE_FEATURES[f]
+            f_obj = Feature(f_args[0], f_args[1], f_args[2])
+            wekaData.addFeature(f_obj)
         else:
             print Log.info("Found unknown feature '" + f + "': excluding")
 
     for a in algorithms:
-        if a in AVAILABLE_ALGORITHMS:
-            wekaData.addAlgorithm(a)
+        if a in AVAILABLE_ALGORITHMS.keys():
+            wekaData.addAlgorithm(AVAILABLE_ALGORITHMS[a])
         else:
-            print Log.info("Found unknown algorithm '" + a + ": excluding")
+            print Log.info("Found unknown algorithm '" + a + "': excluding")
 
     # Pass things off to the wrangler
     
@@ -60,9 +76,12 @@ def run(argv):
     Log.info("DF size: "+str(len(wekaData.getDefaultFeatures())))
     w = Wrangler.Wrangler(wekaData)
     w.populateWekaData()
+
     # Now have the WekaPrimer write the appropriate files
+    WekaPrimer.write_to_file(wekaData, saveFile)
 
     # Pass things off to weka using the weka CLI
+    WekaController.run_weka(wekaData, saveFile)
 
     # Get our return value
 
@@ -72,8 +91,8 @@ def printHelp():
       
     COMMANDS:-------------------------------------------------------------------
     
-    run [-a] [-f] [-m] [-l] := Execute the program using the provided 
-                               arguments
+    run [-a] [-f] [-m] [-l] [-s] := Execute the program using the provided 
+                                    arguments
     
         -a algorithm
            Comma separated list of different Weka algorithms to run.
@@ -95,7 +114,11 @@ def printHelp():
            
         -l load
            Load new data from the cloud about features (default is to use 
-           cached data if available) 
+           cached data if available)
+        
+        -s save
+           Name of the file to save the ARFF formatted data to before executing
+           Weka. The default value is 'genevia_default.arff'
            
     ----------------------------------------------------------------------------
     
@@ -143,6 +166,10 @@ def updateLog(argv):
 # Start program ----------------------------------------------------------------
 # All this will be happening inside a terminal like event loop
 if __name__ == "__main__":
+
+    # Initialize configuration
+    Configuration.init("genevia.config")
+
     while True:
 
         # Get the user inputted command

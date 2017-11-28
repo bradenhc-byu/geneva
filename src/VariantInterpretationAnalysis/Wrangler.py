@@ -7,7 +7,7 @@
 #
 # Returns populated WekaData object
 
-from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES,AVAILABLE_FEATURES_MAP
+from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES
 from Collections import Mutation
 import Parser
 import os
@@ -28,8 +28,8 @@ class Wrangler:
     #    mutation.add_feature(feature,value)
     #    return True
 
-    def addGeneFamilyToMutation(self, mutation, gfMap):
-        mutation.add_feature("GENE_FAMILY", gfMap[mutation.__gene])
+    def addGeneFamilyToMutation(mutation, gfMap):
+        mutation.add_feature("GENE_FAMILY", gfMap.get(mutation.get_gene(),"?"))
         return True
 
     def addYToMutation(self, mutation):
@@ -46,6 +46,7 @@ class Wrangler:
     }
 
     def populateWekaData(self):
+        # This is now done in the Initializer
         #for df in self.__wekaData.getDefaultFeatures():
         #    for m in self.__wekaData.getMutations():
         #        self.addDefaultFeatureToMutation(df, m)
@@ -58,10 +59,11 @@ class Wrangler:
         
 
         for feature in self.__wekaData.getFeatures():
-            feature_path=AVAILABLE_FEATURES_MAP.get(feature)
+            feature_path = feature.get_fileName()
 
-            dataMap = DataBridge.DataBridge.loadMap(feature, AVAILABLE_FEATURES_MAP[feature], self.__wekaData.getMutations())
+            dataMap = DataBridge.DataBridge.loadMap(feature, feature_path,
+                                                    self.__wekaData.getMutations())
             
-            addFeature = Wrangler.dispatcher[f]
+            addFeature = Wrangler.dispatcher[feature]
             for m in self.__wekaData.getMutations():
                 addFeature(m, dataMap)

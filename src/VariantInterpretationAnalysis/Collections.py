@@ -3,6 +3,8 @@
 #
 # Holds key,value pairs for features associated with this mutation
 #
+import collections
+
 from Definitions import AMINO_ACIDS_3_1
 
 class Mutation:
@@ -38,9 +40,13 @@ class Mutation:
         self.__gene = gene
         self.__clinical_sig = clinical_significance
         self.__rs_num = rs_num
+<<<<<<< HEAD
         self.__features = dict()
         self.__chromosome = chromosome
         self.__chrIndex = chrIndex
+=======
+        self.__features = collections.OrderedDict()
+>>>>>>> a911637a408d28df62b840c9fa4fe31e2ec1ca95
 
     def get_id(self):
         return self.__name
@@ -90,10 +96,7 @@ class Mutation:
         return True
 
     def get_feature(self, feature):
-        if feature in self.__features.keys():
-            return self.__features[feature]
-        else:
-            return None
+        return self.__features.get(feature, None)
 
     def __str__(self):
         out_string = str(self.__name) + "\t" + \
@@ -132,7 +135,7 @@ class Feature:
 
         self.__name = name
         self.__fileName = fileName
-        self.dataType = dataType
+        self.__data_type = dataType
 
     def get_name(self):
         return self.__name
@@ -140,6 +143,8 @@ class Feature:
     def get_fileName(self):
         return self.__fileName
 
+    def get_datatype(self):
+        return self.__data_type
 
 ################################################################################
 # WekaData - Data Structure
@@ -157,7 +162,6 @@ class WekaData:
     def __init__(self):
         self.__mutations = list()
         self.__defaultFeatures = list()
-        self.__defaultFeatureMap = {}
         self.__features = list()
         self.__algorithms = list()
         
@@ -173,13 +177,6 @@ class WekaData:
             self.__defaultFeatures.append(feature)
             return True
         return False
-
-    def getDefaultFeatureMap(self):
-        return self.__defaultFeatureMap
-
-    def setDefaultFeatureMap(self, defaultFeatureMap):
-        self.__defaultFeatureMap = copy.deepcopy(defaultFeatureMap)
-        return True
 
     def getMutations(self):
         return self.__mutations
