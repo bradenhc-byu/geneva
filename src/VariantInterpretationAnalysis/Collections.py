@@ -127,13 +127,16 @@ class Feature:
 
         self.__name = name
         self.__fileName = fileName
-        self.dataType = dataType
+        self.__data_type = dataType
 
     def get_name(self):
         return self.__name
 
     def get_fileName(self):
         return self.__fileName
+
+    def get_datatype(self):
+        return self.__data_type
 
 
 ################################################################################
