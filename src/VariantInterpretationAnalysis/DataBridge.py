@@ -8,6 +8,7 @@ import httplib2 as http
 import json
 import os
 import re
+import urllib2
 try: 
     from urlparse import urlparse
 except ImportError:
@@ -86,13 +87,7 @@ class DataBridge:
 
     @staticmethod
     def getSearchRequest(rsNum):
-        headers = {}
-        uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=' + rsNum
-
-        target = urlparse(uri)
-        method = 'GET'
-        body = ''
-        return (target, method, body, headers)
+        return 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=rs' + str(rsNum)
 
     @staticmethod
     def getSearchCallback(content):
@@ -105,8 +100,7 @@ class DataBridge:
 
     requestDispatcher = {
         "GENE_ID": getGeneIdRequest,
-        "GENE_FAMILY": getGeneFamilyRequest,
-        "GENOMIC_LOCATION": getGenomicLocationRequest
+        "GENE_FAMILY": getGeneFamilyRequest
     }
 
     callbackDispatcher = {
@@ -135,31 +129,6 @@ class DataBridge:
             print 'Error detected: ' + response['status']
 
     def downloadGeneFamily(filename, params):
-<<<<<<< HEAD
-        genes = []
-        for f in params:
-            if not f.get_gene() in genes:
-                genes.append(f.get_gene())
-        print "GENE LIST LENGTH: "+str(len(genes))
-        i=0
-        j=0
-        map = {}
-        for gene in genes:
-            i = i+1
-            j = j+1
-
-            try:
-                geneId = DataBridge.download("GENE_ID", gene)
-                geneFamily = DataBridge.download("GENE_FAMILY", geneId[0])
-                print str(j)+" "+str(j)+" Gene: "+str(gene)+". GeneID "+str(geneId[0])+" GeneFamily: " + str(geneFamily)
-                map[gene] = geneFamily
-                if i > 20:
-                    DataBridge.saveToFile(str(map), filename)
-                    i=0
-            finally:
-                i = i
-        DataBridge.saveToFile(str(map), filename)
-=======
         if not os.path.exists(filename):
             genes = []
             for f in params:
@@ -207,7 +176,6 @@ class DataBridge:
                 finally:
                     i = i
             DataBridge.saveToFile(str(map), filename+"Z")
->>>>>>> a911637a408d28df62b840c9fa4fe31e2ec1ca95
 
     loadDispatcher = {
         "GENE_FAMILY": downloadGeneFamily,
@@ -223,16 +191,36 @@ class DataBridge:
 
 
     @staticmethod
+    def getSummaryRequest(queryKey, webEnv):
+        headers = {}
+        uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&query_key=%s&WebEnv=%s'\
+            .format(queryKey, webEnv)
+
+        target = urlparse(uri)
+        method = 'GET'
+        body = ''
+        return (target, method, body, headers)
+
+    @staticmethod
+    def getSummaryCallback(content):
+        print(content)
+
+
+    @staticmethod
     def loadGenomicLocation(mutations):
         for m in mutations:
-            if m.__chr == -1: continue
-            (target, method, body, headers) = DataBridge.getSearchRequest(m)
+            if m.get_chromosome == -1: continue
+            requestUrl = DataBridge.getSearchRequest(m)
+            print(requestUrl)
+            content = urllib2.urlopen(requestUrl).read()
+
+            queryKey, webEnv = DataBridge.getSearchCallback(content)
+
+            (target, method, body, headers) = DataBridge.getSummaryRequest(queryKey, webEnv)
             h = http.Http()
             response, content = h.request(target.geturl(), method, body, headers)
-            if response['status'] == '200':
-                queryKey, webEnv = DataBridge.getSearchCallback(content)
-            else:
-                print 'Error detected: ' + response['status']
+
+
 
 
 
@@ -257,13 +245,14 @@ class DataBridge:
 
 
     def unit_test(self):
-        self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
+        # self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
+        DataBridge.loadGenomicLocation([Mutation("name", "ZNF513")])
 
 
 def testGerp():
-    DataBridge.downloadGerp([Mutation("name", "ZNF513")])
+    DataBridge.downloadGerp([Mutation("name", "ZNF513", rs_num="1800730")])
 
 
-# d=DataBridge()
-# d.unit_test()
-testGerp()
+d=DataBridge()
+d.unit_test()
+# testGerp()

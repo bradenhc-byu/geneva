@@ -40,13 +40,11 @@ class Mutation:
         self.__gene = gene
         self.__clinical_sig = clinical_significance
         self.__rs_num = rs_num
-<<<<<<< HEAD
-        self.__features = dict()
         self.__chromosome = chromosome
         self.__chrIndex = chrIndex
-=======
-        self.__features = collections.OrderedDict()
->>>>>>> a911637a408d28df62b840c9fa4fe31e2ec1ca95
+
+    def get_chromosome(self):
+        return self.__chromosome
 
     def get_id(self):
         return self.__name
