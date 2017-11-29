@@ -9,7 +9,7 @@
 # or try findstr if grep does not work
 #
 import Logger as Log
-from Definitions import DATA_DIR, ROOT_DIR
+from Definitions import DATA_DIR
 import Configuration
 import os
 
@@ -39,8 +39,10 @@ def run_weka(weka_data, weka_file):
 
         else:
             Log.error("Unable to run weka: no specified algorithms")
+            return False
     else:
         Log.error("Unable to run weka: file'" + filepath + "' does not exist")
+        return False
     return True
 
 
@@ -60,11 +62,17 @@ def build_command(algorithm, weka_file, result_file="./tmp_output"):
 #
 from Collections import WekaData
 import Initializer
+import WekaPrimer
+from Definitions import AVAILABLE_ALGORITHMS
 
 def unit_test():
     weka_file = "genevia_default.arff"
     weka_data = WekaData()
-    Initializer.init_weka_data(weka_data, filename=weka_file)
+    Initializer.init_weka_data(weka_data)
+    for a in AVAILABLE_ALGORITHMS:
+        weka_data.addAlgorithm(AVAILABLE_ALGORITHMS[a])
+    WekaPrimer.write_to_file(weka_data, weka_file)
+    run_weka(weka_data, weka_file=weka_file)
 
 if __name__ == "__main__":
     Configuration.init("genevia.config")

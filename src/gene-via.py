@@ -165,7 +165,16 @@ def updateLog(argv):
 
 # Start program ----------------------------------------------------------------
 # All this will be happening inside a terminal like event loop
+import tty
+import sys
+import termios
+
+
 if __name__ == "__main__":
+
+    # Setup stdin for raw input
+    orig_settings = termios.tcgetattr(sys.stdin)
+    tty.setraw(sys.stdin)
 
     # Initialize configuration
     Configuration.init("genevia.config")
@@ -173,8 +182,13 @@ if __name__ == "__main__":
     while True:
 
         # Get the user inputted command
+        c = 0
+        while c != chr(13):
         command = raw_input("VIA >> ")
         argv = command.split()
+
+        if not argv:
+            continue
 
         if argv[0] == "exit":
             break
@@ -191,3 +205,6 @@ if __name__ == "__main__":
         else:
             print "Invalid command option, enter 'help' for a list of available" \
                   "command options"
+
+    # Reset stdin to buffered input
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
