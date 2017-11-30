@@ -37,7 +37,7 @@ def run_weka(weka_data, weka_file):
                 os.system(command)
                 with open(tmp_output, "r") as tmp_output_file:
                     for tmp_result_line in tmp_output_file:
-                        results_file.write(tmp_result_line.rstrip() + "\n")
+                        results_file.write(tmp_result_line.rstrip() + "\n\n")
 
         else:
             Log.error("Unable to run weka: no specified algorithms")
@@ -85,7 +85,7 @@ def unit_test():
     weka_file = "genevia_default.arff"
     weka_data = WekaData()
     Initializer.init_weka_data(weka_data)
-    for a in AVAILABLE_ALGORITHMS:
+    for a in AVAILABLE_ALGORITHMS.keys():
         weka_data.addAlgorithm(AVAILABLE_ALGORITHMS[a])
     WekaPrimer.write_to_file(weka_data, weka_file)
     run_weka(weka_data, weka_file=weka_file)

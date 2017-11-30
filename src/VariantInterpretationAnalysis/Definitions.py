@@ -12,7 +12,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, "data/")
 
 # List of available features to plug into Weka
-# Format is "<key>": (<name>, <filepath>, <data type>)
+# Format is "<key>": (<name>, <filepath>, <weka data type>)
 AVAILABLE_FEATURES = {
     "gene-family": ("GENE_FAMILY",
                     DATA_DIR + "geneFamilyData.txt",
