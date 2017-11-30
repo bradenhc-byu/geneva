@@ -20,7 +20,7 @@ class Mutation:
 
     def __init__(self, name, symbol="", index=-1, gene="NONE",
                  clinical_significance=UNKNOWN,
-                 rs_num=-1):
+                 rs_num=-1, chromosome=-1, chrIndex = -1):
         """
         Represents data about a gene mutation from the cleaned_variants file
 
@@ -40,7 +40,11 @@ class Mutation:
         self.__gene = gene
         self.__clinical_sig = clinical_significance
         self.__rs_num = rs_num
-        self.__features = collections.OrderedDict()
+        self.__chromosome = chromosome
+        self.__chrIndex = chrIndex
+
+    def get_chromosome(self):
+        return self.__chromosome
 
     def get_id(self):
         return self.__name
@@ -91,6 +95,14 @@ class Mutation:
 
     def get_feature(self, feature):
         return self.__features.get(feature, None)
+
+    def add_chromosome(self, chr):
+        self.__chromosome = chr
+        return True
+
+    def add_chr_index(self, chrIndex):
+        self.__chrIndex = chrIndex
+        return True
 
     def __str__(self):
         out_string = str(self.__name) + "\t" + \
