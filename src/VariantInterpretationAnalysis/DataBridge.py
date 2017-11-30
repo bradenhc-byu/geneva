@@ -82,8 +82,9 @@ class DataBridge:
             #data2 = data2[0]
         except:
             data2 = ["?"]
+            data3 = 0
         #print "GeneFamily: "+data2
-        return data2
+        return data3
 
 
     requestDispatcher = {
@@ -172,7 +173,7 @@ class DataBridge:
     @staticmethod
     def loadMap(feature, filename, params):
         if not os.path.exists(filename):
-            DataBridge.loadDispatcher[feature](filename,params)
+            DataBridge.loadDispatcher[feature.get_name()](filename,params)
         myMap = DataBridge.openFromFile(filename)
         #print str(myMap)
         return myMap
