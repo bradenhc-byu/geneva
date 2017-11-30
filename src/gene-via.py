@@ -53,7 +53,7 @@ class GeneVIA(cmd.Cmd):
         argv = line.split()
 
         # Instantiate variables
-        features = AVAILABLE_FEATURES.keys()
+        features = []# AVAILABLE_FEATURES.keys()
         algorithms = AVAILABLE_ALGORITHMS.keys()
         testMutation = ""
         loadFromCloud = False

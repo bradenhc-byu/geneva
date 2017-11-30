@@ -1,12 +1,11 @@
-#To reduce the features
-#java -cp ./weka.jar weka.filters.supervised.attribute.AttributeSelection -E "weka.attributeSelection.CfsSubsetEval -M" -S "weka.attributeSelection.BestFirst -D 1 -N 5" -i data/soybean.arff -o data/soybean2.arff
-
-# To run the tests
-
-# java -cp ./weka.jar weka.classifiers.rules.ZeroR -t "data/weather.nominal.arff" -v | grep "Correctly"
-
-# and it will get you back "Correctly Classified Instances <tab> 9 <tab> 99%"
-# or try findstr if grep does not work
+################################################################################
+# Weka Controller Module
+#
+# Takes a fully populated WekaData object and the location of a fully populated
+# ARFF file containing mutation information from the WekaData object
+# and runs various machine learning algorithms on a filtered subset of the
+# data to determine which features are most effective in correctly classifying
+# mutation classifications.
 #
 import Logger as Log
 from Definitions import DATA_DIR
@@ -17,6 +16,8 @@ import os
 def run_weka(weka_data, weka_file):
     filepath = DATA_DIR + weka_file
     if os.path.exists(filepath):
+        Log.info("Filtering mutation ARFF file")
+        filtered_weka_filepath = filter_mutations(filepath)
         Log.info("Pushing data to weka...")
         results_file = open(DATA_DIR + "weka_results.txt", "w")
         results_file.write("WEKA RESULTS ================================\n\n")
@@ -29,7 +30,8 @@ def run_weka(weka_data, weka_file):
                 Log.info("Running " + algorithm + "...")
                 results_file.write(algorithm + "--------------\n")
                 tmp_output = "./tmp_output"
-                command = build_command(algorithm, filepath, tmp_output)
+                command = build_command(algorithm, filtered_weka_filepath,
+                                        tmp_output)
                 if command is None:
                     return False
                 os.system(command)
@@ -40,10 +42,24 @@ def run_weka(weka_data, weka_file):
         else:
             Log.error("Unable to run weka: no specified algorithms")
             return False
+        results_file.close()
     else:
         Log.error("Unable to run weka: file'" + filepath + "' does not exist")
         return False
     return True
+
+def filter_mutations(weka_filepath):
+    weka_path = Configuration.getConfig("weka_path")
+    filtered_weka_filepath = weka_filepath.replace(".arff","_filtered.arff")
+    filter_command = "java -cp {0} " \
+                     "weka.filters.supervised.attribute.AttributeSelection -E " \
+                     "\"weka.attributeSelection.CfsSubsetEval -M\" -S " \
+                     "\"weka.attributeSelection.BestFirst -D 1 -N 5\" -i " \
+                     "{1} -o {2}".format(weka_path,
+                                         weka_filepath,
+                                         filtered_weka_filepath)
+    os.system(filter_command)
+    return filtered_weka_filepath
 
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
