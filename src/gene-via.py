@@ -53,7 +53,7 @@ class GeneVIA(cmd.Cmd):
         argv = line.split()
 
         # Instantiate variables
-        features = []# AVAILABLE_FEATURES.keys()
+        features = AVAILABLE_FEATURES.keys()
         algorithms = AVAILABLE_ALGORITHMS.keys()
         testMutation = ""
         loadFromCloud = False
@@ -95,18 +95,15 @@ class GeneVIA(cmd.Cmd):
                 f_obj = Feature(f_args[0], f_args[1], f_args[2])
                 wekaData.addFeature(f_obj)
             else:
-                print Log.info("Found unknown feature '" + f + "': excluding")
+                Log.info("Found unknown feature '" + f + "': excluding")
 
         for a in algorithms:
             if a in AVAILABLE_ALGORITHMS.keys():
                 wekaData.addAlgorithm(AVAILABLE_ALGORITHMS[a])
             else:
-                print Log.info("Found unknown algorithm '" + a + "': excluding")
+                Log.info("Found unknown algorithm '" + a + "': excluding")
 
         # Pass things off to the wrangler
-
-        # (Always load the stuff from aaindex2,3)
-        Log.info("DF size: " + str(len(wekaData.getDefaultFeatures())))
         w = Wrangler.Wrangler(wekaData)
         w.populateWekaData()
 

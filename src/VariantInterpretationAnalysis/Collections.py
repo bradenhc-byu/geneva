@@ -42,6 +42,7 @@ class Mutation:
         self.__rs_num = rs_num
         self.__chromosome = chromosome
         self.__chrIndex = chrIndex
+        self.__features = dict()
 
     def get_chromosome(self):
         return self.__chromosome
