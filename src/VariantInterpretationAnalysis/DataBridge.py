@@ -85,18 +85,6 @@ class DataBridge:
         #print "GeneFamily: "+data2
         return data2
 
-    @staticmethod
-    def getSearchRequest(rsNum):
-        return 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=rs' + str(rsNum)
-
-    @staticmethod
-    def getSearchCallback(content):
-        # $web = $1 if ($output = ~ / < WebEnv > (\S +) < \ / WebEnv > / );
-        # $key = $1 if ($output = ~ / < QueryKey > (\d +) < \ / QueryKey > / );
-        webEnv = re.search(r"<WebEnv>(\S+)</WebEnv>").group(1)
-        queryKey = re.search(r"<QueryKey>(\d+)</QueryKey>").group(1)
-        return webEnv, queryKey
-
 
     requestDispatcher = {
         "GENE_ID": getGeneIdRequest,
@@ -191,34 +179,28 @@ class DataBridge:
 
 
     @staticmethod
-    def getSummaryRequest(queryKey, webEnv):
-        headers = {}
-        uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&query_key=%s&WebEnv=%s'\
-            .format(queryKey, webEnv)
-
-        target = urlparse(uri)
-        method = 'GET'
-        body = ''
-        return (target, method, body, headers)
+    def getSNPSummaryRequest(rsNum):
+        url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
+            .format(rsNum)
+        return url
 
     @staticmethod
-    def getSummaryCallback(content):
+    def getSNPSummaryCallback(content):
+
         print(content)
 
 
     @staticmethod
-    def loadGenomicLocation(mutations):
+    def loadSNPData(filename, mutations):
+        if os.path.exists(filename): return
+        snpMap = {}
         for m in mutations:
-            if m.get_chromosome == -1: continue
-            requestUrl = DataBridge.getSearchRequest(m)
+            requestUrl = DataBridge.getSNPSummaryRequest(m.get_rs_number())
             print(requestUrl)
             content = urllib2.urlopen(requestUrl).read()
 
-            queryKey, webEnv = DataBridge.getSearchCallback(content)
 
-            (target, method, body, headers) = DataBridge.getSummaryRequest(queryKey, webEnv)
-            h = http.Http()
-            response, content = h.request(target.geturl(), method, body, headers)
+
 
 
 
