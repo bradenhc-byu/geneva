@@ -96,6 +96,14 @@ class Mutation:
     def get_feature(self, feature):
         return self.__features.get(feature, None)
 
+    def add_chromosome(self, chr):
+        self.__chromosome = chr
+        return True
+
+    def add_chr_index(self, chrIndex):
+        self.__chrIndex = chrIndex
+        return True
+
     def __str__(self):
         out_string = str(self.__name) + "\t" + \
                      str(self.__symbol) + "\t" + \
