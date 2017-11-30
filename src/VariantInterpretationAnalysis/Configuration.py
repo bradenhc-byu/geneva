@@ -11,6 +11,8 @@ def init(filename):
     if os.path.exists(file_path):
         with open(file_path, "r") as config_file:
             for line in config_file:
+                if not line:
+                    continue
                 if line[0] == "#":
                     continue
                 pair = line.split(":")

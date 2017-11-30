@@ -39,10 +39,16 @@ def write_to_file(weka_data, out_filename):
     out_file.writelines("\n@data\n")
     for mutation in weka_data.getMutations():
         data_line = []
+        for feature in weka_data.getDefaultFeatures():
+            value = mutation.get_feature(feature)
+            if value is None or value == "?":
+                value = "0"
+            data_line.append(str(value))
         for feature in weka_data.getFeatures():
             value = mutation.get_feature(feature.get_name())
             if value is None:
-                value = "0" if f.get_datatype() == Feature.NUMERIC_TYPE else "?"
+                value = "0" if feature.get_datatype() == Feature.NUMERIC_TYPE \
+                    else "?"
             data_line.append(str(value))
         out_file.write(",".join(data_line) + "," +
                        mutation.get_clinical_significance() + "\n")
