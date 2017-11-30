@@ -21,12 +21,15 @@ class Wrangler:
         mutation.add_feature("GENE_FAMILY", gfMap.get(mutation.get_gene(),"?"))
         return True
 
-    def addYToMutation(self, mutation):
-        return False
+    @staticmethod
+    def addAlleleFreqToMutation(mutation, mafMap):
+        mutation.add_feature("ALLELE_FREQUENCY", mafMap.get(mutation.get_rs_number(), "?"))
+        return True
 
     # dict of feature type to function
     dispatcher = {
         "GENE_FAMILY": addGeneFamilyToMutation,
+        'ALLELE_FREQUENCY': addAlleleFreqToMutation
         #"y": addYToMutation()
     }
 
@@ -39,8 +42,7 @@ class Wrangler:
         for feature in self.__wekaData.getFeatures():
             feature_path = feature.get_fileName()
 
-            dataMap = DataBridge.DataBridge.loadMap(feature, feature_path,
-                                                    self.__wekaData.getMutations())
+            dataMap = DataBridge.DataBridge.loadMap(feature, self.__wekaData.getMutations())
             
             addFeature = Wrangler.dispatcher[feature.get_name()]
             for m in self.__wekaData.getMutations():
