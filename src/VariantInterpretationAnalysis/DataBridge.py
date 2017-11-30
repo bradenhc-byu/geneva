@@ -251,7 +251,7 @@ class DataBridge:
 def testGerp():
     DataBridge.downloadGerp([Mutation("name", "ZNF513", rs_num="1800730")])
 
-
-d=DataBridge()
-d.unit_test()
-# testGerp()
+if __name__ == "__main__":
+    d=DataBridge()
+    d.unit_test()
+    # testGerp()
