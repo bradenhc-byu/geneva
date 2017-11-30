@@ -7,11 +7,15 @@
 import httplib2 as http
 import json
 import os
+import re
+import urllib2
 try: 
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
 from Collections import Mutation,Feature
+import pyodbc
+import mysql.connector
 
 
 class DataBridge:
@@ -81,6 +85,19 @@ class DataBridge:
         #print "GeneFamily: "+data2
         return data2
 
+    @staticmethod
+    def getSearchRequest(rsNum):
+        return 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=snp&term=rs' + str(rsNum)
+
+    @staticmethod
+    def getSearchCallback(content):
+        # $web = $1 if ($output = ~ / < WebEnv > (\S +) < \ / WebEnv > / );
+        # $key = $1 if ($output = ~ / < QueryKey > (\d +) < \ / QueryKey > / );
+        webEnv = re.search(r"<WebEnv>(\S+)</WebEnv>").group(1)
+        queryKey = re.search(r"<QueryKey>(\d+)</QueryKey>").group(1)
+        return webEnv, queryKey
+
+
     requestDispatcher = {
         "GENE_ID": getGeneIdRequest,
         "GENE_FAMILY": getGeneFamilyRequest
@@ -101,7 +118,7 @@ class DataBridge:
     def openFromFile(filename):
         return eval(open(filename, 'r').read())
 
-    @staticmethod    
+    @staticmethod
     def download(feature, mutations):
         (target, method, body, headers) = DataBridge.requestDispatcher[feature](mutations)
         h = http.Http()
@@ -164,7 +181,7 @@ class DataBridge:
         "GENE_FAMILY": downloadGeneFamily,
     }
 
-    @staticmethod    
+    @staticmethod
     def loadMap(feature, filename, params):
         if not os.path.exists(filename):
             DataBridge.loadDispatcher[feature](filename,params)
@@ -173,8 +190,69 @@ class DataBridge:
         return myMap
 
 
-    def unit_test(self):
-        self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
+    @staticmethod
+    def getSummaryRequest(queryKey, webEnv):
+        headers = {}
+        uri = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&query_key=%s&WebEnv=%s'\
+            .format(queryKey, webEnv)
 
-#d=DataBridge()
-#d.unit_test()
+        target = urlparse(uri)
+        method = 'GET'
+        body = ''
+        return (target, method, body, headers)
+
+    @staticmethod
+    def getSummaryCallback(content):
+        print(content)
+
+
+    @staticmethod
+    def loadGenomicLocation(mutations):
+        for m in mutations:
+            if m.get_chromosome == -1: continue
+            requestUrl = DataBridge.getSearchRequest(m)
+            print(requestUrl)
+            content = urllib2.urlopen(requestUrl).read()
+
+            queryKey, webEnv = DataBridge.getSearchCallback(content)
+
+            (target, method, body, headers) = DataBridge.getSummaryRequest(queryKey, webEnv)
+            h = http.Http()
+            response, content = h.request(target.geturl(), method, body, headers)
+
+
+
+
+
+
+    @staticmethod
+    def downloadGerp(mutations, fileName):
+        # cnxn = pyodbc.connect('DRIVER={MySQL};SERVER=genome-mysql.soe.ucsc.edu;UID=genome;')
+        # cnxn = pyodbc.connect("Login Prompt=False;User ID=genome;Data Source=genome-mysql.soe.ucsc.edu;CHARSET=UTF8")
+        # cnxn.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
+        # cnxn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
+        # cnxn.setencoding(encoding='utf-8')
+        # cursor = cnxn.cursor()
+
+
+        cnx = mysql.connector.connect(user='genome',
+                                      host='genome-mysql.soe.ucsc.edu',
+                                      database='hg19')
+        cursor = cnx.cursor("SELECT ")
+
+        cnx.close()
+
+
+
+    def unit_test(self):
+        # self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
+        DataBridge.loadGenomicLocation([Mutation("name", "ZNF513")])
+
+
+def testGerp():
+    DataBridge.downloadGerp([Mutation("name", "ZNF513", rs_num="1800730")])
+
+
+d=DataBridge()
+d.unit_test()
+# testGerp()
