@@ -9,6 +9,7 @@ import json
 import os
 import re
 import urllib2
+import xml.etree.ElementTree as ET
 try: 
     from urlparse import urlparse
 except ImportError:
@@ -117,12 +118,12 @@ class DataBridge:
         else:
             print 'Error detected: ' + response['status']
 
-    def downloadGeneFamily(filename, params):
+    def downloadGeneFamily(filename, mutations):
         if not os.path.exists(filename):
             genes = []
-            for f in params:
-                if not f.get_gene() in genes:
-                    genes.append(f.get_gene())
+            for m in mutations:
+                if not m.get_gene() in genes:
+                    genes.append(m.get_gene())
             print "GENE LIST LENGTH: "+str(len(genes))
             i=0
             geneIdMap1 = {}
@@ -150,7 +151,7 @@ class DataBridge:
             for geneName, geneI in geneIdMap1.iteritems(): #use .items() if you have python 3
                 i = i+1
                 j = j+1
-                
+
                 try:
                     #geneId = DataBridge.download("GENE_ID",geneI)
                     if not geneName in map:
@@ -166,32 +167,6 @@ class DataBridge:
                     i = i
             DataBridge.saveToFile(str(map), filename+"Z")
 
-    loadDispatcher = {
-        "GENE_FAMILY": downloadGeneFamily,
-    }
-
-    @staticmethod
-    def loadMap(feature, filename, params):
-        if not os.path.exists(filename):
-            DataBridge.loadDispatcher[feature.get_name()](filename,params)
-        myMap = DataBridge.openFromFile(filename)
-        #print str(myMap)
-        return myMap
-
-
-    @staticmethod
-    def getSNPSummaryRequest(rsNum):
-        url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
-            .format(rsNum)
-        return url
-
-    @staticmethod
-    def getSNPSummaryCallback(content):
-
-        print(content)
-
-
-    @staticmethod
     def loadSNPData(filename, mutations):
         if os.path.exists(filename): return
         snpMap = {}
@@ -199,12 +174,54 @@ class DataBridge:
             requestUrl = DataBridge.getSNPSummaryRequest(m.get_rs_number())
             print(requestUrl)
             content = urllib2.urlopen(requestUrl).read()
+            chr, chrIndex, maf = DataBridge.getSNPSummaryCallback(content)
+            m.add_chromosome(chr)
+            m.add_chr_index(chrIndex)
+            snpMap[m.get_rs_number()] = maf
+        DataBridge.saveToFile(str(snpMap), filename)
+
+    loadDispatcher = {
+        "GENE_FAMILY": downloadGeneFamily,
+        "ALLELE_FREQUENCY": loadSNPData
+    }
+
+
+    @staticmethod
+    def loadMap(feature, params):
+        filename = feature.get_fileName()
+        if not os.path.exists(filename):
+            DataBridge.loadDispatcher[feature.get_name()](filename, params)
+        myMap = DataBridge.openFromFile(filename)
+        #print str(myMap)
+        return myMap
 
 
 
+    @staticmethod
+    def getSNPSummaryCallback(content):
+        xmlTree = ET.fromstring(content)
+        record = xmlTree.find('DocSum')
+        chr = None
+        chrIndex = None
+        maf = None
+        for item in record.findall('Item'):
+            if item.attrib['Name'] == 'GLOBAL_MAF':
+                maf = item.text
+                maf = float(maf.split("=")[1].split("/")[0])
+                print(maf)
+                continue
+            elif item.attrib['Name'] == 'CHRPOS':
+                chr, chrIndex = item.text.split(":")
+                chrIndex = long(chrIndex)
+                print(chr, chrIndex)
+                continue
+        return chr, chrIndex, maf
 
-
-
+    @staticmethod
+    def getSNPSummaryRequest(rsNum):
+        url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
+            .format(rsNum)
+        return url
 
 
 
@@ -228,8 +245,8 @@ class DataBridge:
 
 
     def unit_test(self):
-        # self.loadMap("GENE_FAMILY", "GENEFAMILY.txt", ["ZNF513"])
-        DataBridge.loadGenomicLocation([Mutation("name", "ZNF513")])
+        self.loadMap(Feature("GENE_FAMILY"), [Mutation("name", "ZNF513", rs_num="1800730", gene="ZNF513")])
+        DataBridge.loadMap(Feature("ALLELE_FREQUENCY"), [Mutation("name", "ZNF513", rs_num="1800730")])
 
 
 def testGerp():

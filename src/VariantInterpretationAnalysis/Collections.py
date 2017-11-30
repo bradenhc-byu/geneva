@@ -138,7 +138,7 @@ class Feature:
 
     def __init__(self, name, fileName = "DEFAULT", dataType=NUMERIC_TYPE):
         if fileName == "DEFAULT":
-            fileName = name + '.txt'
+            fileName = "data/" + name + '.txt'
 
         self.__name = name
         self.__fileName = fileName
