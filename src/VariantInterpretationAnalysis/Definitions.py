@@ -16,7 +16,13 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 AVAILABLE_FEATURES = {
     "gene-family": ("GENE_FAMILY",
                     DATA_DIR + "geneFamilyData.txt",
-                    "string")
+                    "string"),
+    "allele-frequency": ("ALLELE_FREQUENCY",
+                         DATA_DIR + "alleleFreqData.txt",
+                         "numeric"),
+    "phast-cons": ("PHAST_CONS",
+                   DATA_DIR + "phastConsData.txt",
+                   "numeric")
 }
 
 # List of available algorithms to use in Weka
