@@ -19,7 +19,10 @@ AVAILABLE_FEATURES = {
                     "string"),
     "allele-frequency": ("ALLELE_FREQUENCY",
                          DATA_DIR + "alleleFreqData.txt",
-                         "numeric")
+                         "numeric"),
+    "phast-cons": ("PHAST_CONS",
+                   DATA_DIR + "phastConsData.txt",
+                   "numeric")
 }
 
 # List of available algorithms to use in Weka

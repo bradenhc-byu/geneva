@@ -47,6 +47,9 @@ class Mutation:
     def get_chromosome(self):
         return self.__chromosome
 
+    def get_chr_index(self):
+        return self.__chrIndex
+
     def get_id(self):
         return self.__name
 

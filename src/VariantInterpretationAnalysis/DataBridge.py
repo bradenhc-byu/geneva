@@ -18,9 +18,11 @@ from Collections import Mutation,Feature
 import pyodbc
 import mysql.connector
 import Logger as Log
-
+from Definitions import AVAILABLE_FEATURES
 
 class DataBridge:
+
+    @staticmethod
     def getGeneIdRequest(genes):
         headers = {
           'Accept': 'application/json',
@@ -32,13 +34,14 @@ class DataBridge:
             for gene1 in gene.split(";"):
                 path = path +str(gene1)+"+OR+"
         path = path[:-4]
-        print path
+        Log.debug("Gene ID path = " + path)
     
         target = urlparse(uri + path)
         method = 'GET'
         body = ''
         return (target, method,body,headers)
 
+    @staticmethod
     def getGeneIdCallback(content):
         # assume that content is a json reply
         # parse content with the json module
@@ -57,6 +60,7 @@ class DataBridge:
         #print str(data2)
         return data2
 
+    @staticmethod
     def getGeneFamilyRequest(id):
         headers = {
           'Accept': 'application/json',
@@ -70,6 +74,7 @@ class DataBridge:
         body = ''
         return (target, method,body,headers)
 
+    @staticmethod
     def getGeneFamilyCallback(content):
         # assume that content is a json reply
         # parse content with the json module
@@ -90,15 +95,7 @@ class DataBridge:
         return data3
 
 
-    requestDispatcher = {
-        "GENE_ID": getGeneIdRequest,
-        "GENE_FAMILY": getGeneFamilyRequest
-    }
 
-    callbackDispatcher = {
-        "GENE_ID": getGeneIdCallback,
-        "GENE_FAMILY": getGeneFamilyCallback
-    }
 
     @staticmethod
     def saveToFile(text, fileName):
@@ -118,8 +115,9 @@ class DataBridge:
         if response['status'] == '200':
             return DataBridge.callbackDispatcher[feature](content)
         else:
-            print 'Error detected: ' + response['status']
+            Log.error('Error detected: ' + response['status'])
 
+    @staticmethod
     def downloadGeneFamily(filename, mutations):
         if not os.path.exists(filename):
             genes = []
@@ -137,7 +135,7 @@ class DataBridge:
                         if geneName in genes1:
                             geneIdMap1[geneName] = geneI
                     #geneIdMap1.update(geneIdMap)
-                    print str(len(geneIdMap1))
+                    Log.debug("geneIdMap1 length = " + str(len(geneIdMap1)))
                 else:
                     break
                 i=i+100
@@ -149,7 +147,7 @@ class DataBridge:
             #for geneId in geneIdMap:
             i=0
             j=0
-            print str(len(geneIdMap1))
+            Log.debug("geneIdMap1 length = " + str(len(geneIdMap1)))
             for geneName, geneI in geneIdMap1.iteritems(): #use .items() if you have python 3
                 i = i+1
                 j = j+1
@@ -158,19 +156,21 @@ class DataBridge:
                     #geneId = DataBridge.download("GENE_ID",geneI)
                     if not geneName in map:
                         geneFamily = DataBridge.download("GENE_FAMILY", geneI)
-                        print str(i)+" "+str(j)+" Gene: "+str(geneName)+". GeneID "+str(geneI)+" GeneFamily: " + str(geneFamily)
+                        Log.debug(str(i)+" "+str(j)+" Gene: "+str(geneName)+". GeneID "+str(geneI)+" GeneFamily: " + str(geneFamily))
                         map[geneName] = geneFamily
                         if i > 20:
                             DataBridge.saveToFile(str(map), filename+"Z")
                             i=0
                     else:
-                        print str(i)+" "+str(j)+" Gene: "+str(geneName)+". GeneID "+str(geneI)+" GeneFamily: " + str(map[geneName]) + " already saved!"
+                        Log.debug(str(i)+" "+str(j)+" Gene: "+str(geneName)+". GeneID "+str(geneI)+" GeneFamily: " + str(map[geneName]) + " already saved!")
                 finally:
                     i = i
-            DataBridge.saveToFile(str(map), filename+"Z")
+            DataBridge.saveToFile(str(map), filename)
 
-    def loadSNPData(filename, mutations):
-        if os.path.exists(filename): return
+    @staticmethod
+    def downloadSNPData(filename, mutations):
+        filename = AVAILABLE_FEATURES["allele-frequency"][1]
+        if os.path.exists(filename) and mutations[0].get_chromosome() != -1: return
         snpMap = {}
         for m in mutations:
             requestUrl = DataBridge.getSNPSummaryRequest(m.get_rs_number())
@@ -182,16 +182,45 @@ class DataBridge:
         DataBridge.saveToFile(str(snpMap), filename)
         Log.info("Saved allele frequency map for %s mutations" % len(snpMap))
 
-    loadDispatcher = {
-        "GENE_FAMILY": downloadGeneFamily,
-        "ALLELE_FREQUENCY": loadSNPData
-    }
 
+    @staticmethod
+    def getPhastConsRequest(mutation):
+        chrString = "chr" + mutation.get_chromosome()
+        queryString = "SELECT score WHERE "
+
+    @staticmethod
+    def downloadPhastCons(filename, mutations):
+        if mutations[0].get_chromosome() == -1:
+            # need genomic location (obtained through allele frequency download)
+            DataBridge.downloadSNPData(AVAILABLE_FEATURES['allele-frequency'][1], mutations)
+
+        cnx = mysql.connector.connect(user='genome',
+                                      host='genome-mysql.soe.ucsc.edu',
+                                      database='hg38')
+        cursor = cnx.cursor()
+        query = """SELECT score FROM phastConsElements20way 
+                            WHERE chrom = %s
+                            AND chromStart <= %s
+                            AND chromEnd >= %s"""
+
+        pcMap = {}
+        for m in mutations:
+            chrString = "chr" + m.get_chromosome()
+            cursor.execute(query, (chrString, m.get_chr_index(), m.get_chr_index()))
+            for scores in cursor:
+                assert len(scores) == 1
+                score = scores[0]
+                Log.debug("Mutation rs%s has PhastCon score %d" % (m.get_rs_number(), score))
+                pcMap[m.get_rs_number()] = score
+
+        DataBridge.saveToFile(str(pcMap), filename)
+        cnx.close()
 
     @staticmethod
     def loadMap(feature, params):
         filename = feature.get_fileName()
         if not os.path.exists(filename):
+            Log.info("Cached file not found. Downloading %s data" % feature.get_name())
             DataBridge.loadDispatcher[feature.get_name()](filename, params)
         myMap = DataBridge.openFromFile(filename)
         #print str(myMap)
@@ -209,6 +238,9 @@ class DataBridge:
         maf = None
         for item in record.findall('Item'):
             if item.attrib['Name'] == 'GLOBAL_MAF':
+                if item.text == None:
+                    maf = "?"
+                    continue
                 maf = item.text
                 maf = float(maf.split("=")[1].split("/")[0])
                 continue
@@ -225,37 +257,76 @@ class DataBridge:
         return url
 
 
+    @staticmethod
+    def geneFamTest(mutations):
+        feature = Feature(*AVAILABLE_FEATURES['gene-family'])
+        try: os.remove(feature.get_fileName())
+        except: pass
+        gfMap = DataBridge.loadMap(feature, mutations)
+        assert gfMap != None
+        assert gfMap['TWNK'] == [1167]
+        assert gfMap["FBN1"] == ['?']
 
     @staticmethod
-    def downloadGerp(mutations, fileName):
-        # cnxn = pyodbc.connect('DRIVER={MySQL};SERVER=genome-mysql.soe.ucsc.edu;UID=genome;')
-        # cnxn = pyodbc.connect("Login Prompt=False;User ID=genome;Data Source=genome-mysql.soe.ucsc.edu;CHARSET=UTF8")
-        # cnxn.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
-        # cnxn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
-        # cnxn.setencoding(encoding='utf-8')
-        # cursor = cnxn.cursor()
+    def mafTest(mutations):
+        feature = Feature(*AVAILABLE_FEATURES['allele-frequency'])
+        try: os.remove(feature.get_fileName())
+        except: pass
+        mafMap = DataBridge.loadMap(feature, mutations)
+        assert mafMap["374997012"] == "?"
+        assert mafMap["2228241"] == 0.0004
+
+    @staticmethod
+    def pcTest(mutations):
+        feature = Feature(*AVAILABLE_FEATURES['phast-cons'])
+        try: os.remove(feature.get_fileName())
+        except: pass
+        pcMap = DataBridge.loadMap(feature, mutations)
+        assert pcMap["374997012"] == 557
+        assert pcMap["2228241"] == 367
+
+    @staticmethod
+    def genLocationTest(mutations):
+        DataBridge.downloadSNPData(AVAILABLE_FEATURES['allele-frequency'][1], mutations)
+        assert mutations[0].get_chromosome() == "10"
+        assert mutations[0].get_chr_index() == 100989114L
+        assert mutations[1].get_chromosome() == "15"
+        assert mutations[1].get_chr_index() == 48487353L
 
 
-        cnx = mysql.connector.connect(user='genome',
-                                      host='genome-mysql.soe.ucsc.edu',
-                                      database='hg19')
-        cursor = cnx.cursor("SELECT ")
+    @staticmethod
+    def unit_test():
+        Log.set_log_level("DEBUG")
+        mutations = [Mutation("name", gene="TWNK", rs_num="374997012"),
+                     Mutation("blabla", gene="FBN1", rs_num="2228241")]
+        assert mutations[0].get_chromosome() == -1
 
-        cnx.close()
+        DataBridge.geneFamTest(mutations)
+        DataBridge.pcTest(mutations)
+        DataBridge.genLocationTest(mutations)
+        DataBridge.mafTest(mutations)
+
+        Log.debug("DATABRIDGE UNIT TESTS PASSED")
 
 
 
-    def unit_test(self):
-        mutations = [Mutation("name", rs_num="1800730", gene="ZNF513"),
-                     Mutation("blabla", "FBN1", gene="FBN1", rs_num="2228241")]
-        self.loadMap(Feature("GENE_FAMILY"), mutations)
-        DataBridge.loadMap(Feature("ALLELE_FREQUENCY"), mutations)
 
+DataBridge.requestDispatcher = {
+    "GENE_ID": DataBridge.getGeneIdRequest,
+    "GENE_FAMILY": DataBridge.getGeneFamilyRequest
+}
 
-def testGerp():
-    DataBridge.downloadGerp([Mutation("name", "ZNF513", rs_num="1800730")])
+DataBridge.callbackDispatcher = {
+    "GENE_ID": DataBridge.getGeneIdCallback,
+    "GENE_FAMILY": DataBridge.getGeneFamilyCallback
+}
+
+DataBridge.loadDispatcher = {
+    "GENE_FAMILY": DataBridge.downloadGeneFamily,
+    "ALLELE_FREQUENCY": DataBridge.downloadSNPData,
+    "PHAST_CONS": DataBridge.downloadPhastCons
+}
+
 
 if __name__ == "__main__":
-    d=DataBridge()
-    d.unit_test()
-    # testGerp()
+    DataBridge.unit_test()
