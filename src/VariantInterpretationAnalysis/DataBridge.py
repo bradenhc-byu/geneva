@@ -169,7 +169,6 @@ class DataBridge:
 
     @staticmethod
     def downloadSNPData(filename, mutations):
-        filename = AVAILABLE_FEATURES["allele-frequency"][1]
         if os.path.exists(filename) and mutations[0].get_chromosome() != -1: return
         snpMap = {}
         for m in mutations:
@@ -205,13 +204,16 @@ class DataBridge:
 
         pcMap = {}
         for m in mutations:
-            chrString = "chr" + m.get_chromosome()
-            cursor.execute(query, (chrString, m.get_chr_index(), m.get_chr_index()))
-            for scores in cursor:
-                assert len(scores) == 1
-                score = scores[0]
-                Log.debug("Mutation rs%s has PhastCon score %d" % (m.get_rs_number(), score))
-                pcMap[m.get_rs_number()] = score
+            score = "?"
+            try:
+                chrString = "chr" + m.get_chromosome()
+                cursor.execute(query, (chrString, m.get_chr_index(), m.get_chr_index()))
+                for scores in cursor:
+                    assert len(scores) == 1
+                    score = scores[0]
+                    Log.debug("Mutation rs%s has PhastCon score %d" % (m.get_rs_number(), score))
+            except: pass
+            pcMap[m.get_rs_number()] = score
 
         DataBridge.saveToFile(str(pcMap), filename)
         cnx.close()
@@ -231,23 +233,25 @@ class DataBridge:
 
     @staticmethod
     def getSNPSummaryCallback(content):
-        xmlTree = ET.fromstring(content)
-        record = xmlTree.find('DocSum')
-        chr = None
-        chrIndex = None
-        maf = None
-        for item in record.findall('Item'):
-            if item.attrib['Name'] == 'GLOBAL_MAF':
-                try:
-                    maf = item.text
-                    maf = float(maf.split("=")[1].split("/")[0])
-                except:
-                    maf = "?"
-                continue
-            elif item.attrib['Name'] == 'CHRPOS':
-                chr, chrIndex = item.text.split(":")
-                chrIndex = long(chrIndex)
-                continue
+        chr = -1
+        chrIndex = -1
+        maf = "?"
+        try:
+            xmlTree = ET.fromstring(content)
+            record = xmlTree.find('DocSum')
+            for item in record.findall('Item'):
+                if item.attrib['Name'] == 'GLOBAL_MAF':
+                    try:
+                        maf = item.text
+                        maf = float(maf.split("=")[1].split("/")[0])
+                    except:
+                        maf = "?"
+                    continue
+                elif item.attrib['Name'] == 'CHRPOS':
+                    chr, chrIndex = item.text.split(":")
+                    chrIndex = long(chrIndex)
+                    continue
+        except: pass
         return chr, chrIndex, maf
 
     @staticmethod
@@ -260,7 +264,7 @@ class DataBridge:
     @staticmethod
     def geneFamTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['gene-family'])
-        feature.__filename += "test"
+        feature.set_filename(feature.get_fileName() + "test")
         try: os.remove(feature.get_fileName())
         except: pass
         gfMap = DataBridge.loadMap(feature, mutations)
@@ -271,7 +275,7 @@ class DataBridge:
     @staticmethod
     def mafTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['allele-frequency'])
-        feature.__filename += "test"
+        feature.set_filename(feature.get_fileName() + "test")
         try: os.remove(feature.get_fileName())
         except: pass
         mafMap = DataBridge.loadMap(feature, mutations)
@@ -281,7 +285,7 @@ class DataBridge:
     @staticmethod
     def pcTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['phast-cons'])
-        feature.__filename += "test"
+        feature.set_filename(feature.get_fileName() + "test")
         try: os.remove(feature.get_fileName())
         except: pass
         pcMap = DataBridge.loadMap(feature, mutations)
@@ -296,13 +300,16 @@ class DataBridge:
         assert mutations[0].get_chr_index() == 100989114L
         assert mutations[1].get_chromosome() == "15"
         assert mutations[1].get_chr_index() == 48487353L
+        assert mutations[2].get_chromosome() == -1
+        assert mutations[2].get_chr_index() == -1
 
 
     @staticmethod
     def unit_test():
         Log.set_log_level("DEBUG")
         mutations = [Mutation("name", gene="TWNK", rs_num="374997012"),
-                     Mutation("blabla", gene="FBN1", rs_num="2228241")]
+                     Mutation("blabla", gene="FBN1", rs_num="2228241"),
+                     Mutation("junk", gene="xylophoneMonster", rs_num="rubbish")]
         assert mutations[0].get_chromosome() == -1
 
         DataBridge.geneFamTest(mutations)

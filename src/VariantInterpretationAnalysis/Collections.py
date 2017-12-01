@@ -156,6 +156,9 @@ class Feature:
     def get_datatype(self):
         return self.__data_type
 
+    def set_filename(self, filename):
+        self.__fileName = filename
+
 ################################################################################
 # WekaData - Data Structure
 #
