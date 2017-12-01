@@ -238,11 +238,11 @@ class DataBridge:
         maf = None
         for item in record.findall('Item'):
             if item.attrib['Name'] == 'GLOBAL_MAF':
-                if item.text == None:
+                try:
+                    maf = item.text
+                    maf = float(maf.split("=")[1].split("/")[0])
+                except:
                     maf = "?"
-                    continue
-                maf = item.text
-                maf = float(maf.split("=")[1].split("/")[0])
                 continue
             elif item.attrib['Name'] == 'CHRPOS':
                 chr, chrIndex = item.text.split(":")
@@ -260,6 +260,7 @@ class DataBridge:
     @staticmethod
     def geneFamTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['gene-family'])
+        feature.__filename += "test"
         try: os.remove(feature.get_fileName())
         except: pass
         gfMap = DataBridge.loadMap(feature, mutations)
@@ -270,6 +271,7 @@ class DataBridge:
     @staticmethod
     def mafTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['allele-frequency'])
+        feature.__filename += "test"
         try: os.remove(feature.get_fileName())
         except: pass
         mafMap = DataBridge.loadMap(feature, mutations)
@@ -279,6 +281,7 @@ class DataBridge:
     @staticmethod
     def pcTest(mutations):
         feature = Feature(*AVAILABLE_FEATURES['phast-cons'])
+        feature.__filename += "test"
         try: os.remove(feature.get_fileName())
         except: pass
         pcMap = DataBridge.loadMap(feature, mutations)
@@ -287,7 +290,8 @@ class DataBridge:
 
     @staticmethod
     def genLocationTest(mutations):
-        DataBridge.downloadSNPData(AVAILABLE_FEATURES['allele-frequency'][1], mutations)
+        filename = AVAILABLE_FEATURES['allele-frequency'][1] + "test"
+        DataBridge.downloadSNPData(filename, mutations)
         assert mutations[0].get_chromosome() == "10"
         assert mutations[0].get_chr_index() == 100989114L
         assert mutations[1].get_chromosome() == "15"
