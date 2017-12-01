@@ -17,6 +17,7 @@ except ImportError:
 from Collections import Mutation,Feature
 import pyodbc
 import mysql.connector
+import Logger as Log
 
 
 class DataBridge:
@@ -83,6 +84,8 @@ class DataBridge:
             #data2 = data2[0]
         except:
             data2 = ["?"]
+            data3 = ["?"]
+            Log.error("Couldn't find gene family for " + data['response']['docs'][0]['symbol'])
         #print "GeneFamily: "+data2
         return data3
 
@@ -123,13 +126,13 @@ class DataBridge:
             for m in mutations:
                 if not m.get_gene() in genes:
                     genes.append(m.get_gene())
-            print "GENE LIST LENGTH: "+str(len(genes))
-            i=0
+            Log.info("GENE LIST LENGTH: "+str(len(genes)))
+            i = 0
             geneIdMap1 = {}
             while i < str(len(genes)):
                 genes1 = genes[i:i+100]
                 if (len(genes1) > 0):
-                    geneIdMap = DataBridge.download("GENE_ID",genes1)
+                    geneIdMap = DataBridge.download("GENE_ID", genes1)
                     for geneName, geneI in geneIdMap.iteritems():
                         if geneName in genes1:
                             geneIdMap1[geneName] = geneI
@@ -171,13 +174,13 @@ class DataBridge:
         snpMap = {}
         for m in mutations:
             requestUrl = DataBridge.getSNPSummaryRequest(m.get_rs_number())
-            print(requestUrl)
             content = urllib2.urlopen(requestUrl).read()
             chr, chrIndex, maf = DataBridge.getSNPSummaryCallback(content)
             m.add_chromosome(chr)
             m.add_chr_index(chrIndex)
             snpMap[m.get_rs_number()] = maf
         DataBridge.saveToFile(str(snpMap), filename)
+        Log.info("Saved allele frequency map for %s mutations" % len(snpMap))
 
     loadDispatcher = {
         "GENE_FAMILY": downloadGeneFamily,
@@ -192,6 +195,7 @@ class DataBridge:
             DataBridge.loadDispatcher[feature.get_name()](filename, params)
         myMap = DataBridge.openFromFile(filename)
         #print str(myMap)
+        Log.info("Loading map for %s" % feature.get_name())
         return myMap
 
 
@@ -207,12 +211,10 @@ class DataBridge:
             if item.attrib['Name'] == 'GLOBAL_MAF':
                 maf = item.text
                 maf = float(maf.split("=")[1].split("/")[0])
-                print(maf)
                 continue
             elif item.attrib['Name'] == 'CHRPOS':
                 chr, chrIndex = item.text.split(":")
                 chrIndex = long(chrIndex)
-                print(chr, chrIndex)
                 continue
         return chr, chrIndex, maf
 
@@ -244,8 +246,10 @@ class DataBridge:
 
 
     def unit_test(self):
-        self.loadMap(Feature("GENE_FAMILY"), [Mutation("name", "ZNF513", rs_num="1800730", gene="ZNF513")])
-        DataBridge.loadMap(Feature("ALLELE_FREQUENCY"), [Mutation("name", "ZNF513", rs_num="1800730")])
+        mutations = [Mutation("name", rs_num="1800730", gene="ZNF513"),
+                     Mutation("blabla", "FBN1", gene="FBN1", rs_num="2228241")]
+        self.loadMap(Feature("GENE_FAMILY"), mutations)
+        DataBridge.loadMap(Feature("ALLELE_FREQUENCY"), mutations)
 
 
 def testGerp():

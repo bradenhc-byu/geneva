@@ -8,7 +8,7 @@
 # Returns populated WekaData object
 
 from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES
-from Collections import Mutation
+from Collections import Mutation, Feature
 import Parser
 import os
 import DataBridge
@@ -38,9 +38,11 @@ class Wrangler:
     }
 
     def populateWekaData(self):
+        # get genomic locations for mutations
+        DataBridge.DataBridge.loadSNPData(AVAILABLE_FEATURES["allele-frequency"][1], self.__wekaData.getMutations())
 
+        # populate feature data
         for feature in self.__wekaData.getFeatures():
-            feature_path = feature.get_fileName()
 
             dataMap = DataBridge.DataBridge.loadMap(feature, self.__wekaData.getMutations())
             
