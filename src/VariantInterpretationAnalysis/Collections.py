@@ -47,6 +47,9 @@ class Mutation:
     def get_chromosome(self):
         return self.__chromosome
 
+    def get_chr_index(self):
+        return self.__chrIndex
+
     def get_id(self):
         return self.__name
 
@@ -152,6 +155,9 @@ class Feature:
 
     def get_datatype(self):
         return self.__data_type
+
+    def set_filename(self, filename):
+        self.__fileName = filename
 
 ################################################################################
 # WekaData - Data Structure
