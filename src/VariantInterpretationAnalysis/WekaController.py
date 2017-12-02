@@ -16,9 +16,10 @@ import os
 def run_weka(weka_data, weka_file):
     filepath = DATA_DIR + weka_file
     if os.path.exists(filepath):
-        Log.info("Filtering mutation ARFF file")
-        filtered_weka_filepath = filter_mutations(filepath)
-        Log.info("Pushing data to weka...")
+        Log.info("Converting any strings to nominal values...")
+        converted_weka_filepath = convert_arff_to_all_nominal(filepath)
+        Log.info("Filtering mutation ARFF file...")
+        filtered_weka_filepath = filter_mutations(converted_weka_filepath)
         results_file = open(DATA_DIR + "weka_results.txt", "w")
         results_file.write("WEKA RESULTS ================================\n\n")
         # Run the specified algorithms on the data and get the results
@@ -47,6 +48,17 @@ def run_weka(weka_data, weka_file):
         Log.error("Unable to run weka: file'" + filepath + "' does not exist")
         return False
     return True
+
+def convert_arff_to_all_nominal(weka_filepath):
+    weka_path = Configuration.getConfig("weka_path")
+    converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
+    convert_command = "java -cp {0} " \
+                      "weka.filters.unsupervised.attribute.StringToNominal " \
+                      "-R first -i {1} -o {2}".format(weka_path,
+                                                     weka_filepath,
+                                                     converted_filepath)
+    os.system(convert_command)
+    return converted_filepath
 
 def filter_mutations(weka_filepath):
     weka_path = Configuration.getConfig("weka_path")
