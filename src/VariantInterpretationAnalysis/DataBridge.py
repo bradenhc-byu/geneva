@@ -171,15 +171,13 @@ class DataBridge:
     def downloadSNPData(filename, mutations):
         if os.path.exists(filename) and mutations[0].get_chromosome() != -1: return
         snpMap = {}
-        for m in mutations:
-            requestUrl = DataBridge.getSNPSummaryRequest(m.get_rs_number())
-            content = urllib2.urlopen(requestUrl).read()
-            chr, chrIndex, maf = DataBridge.getSNPSummaryCallback(content)
-            m.add_chromosome(chr)
-            m.add_chr_index(chrIndex)
-            snpMap[m.get_rs_number()] = maf
+
+        requestUrl = DataBridge.getSNPSummaryRequest(mutations)
+        content = urllib2.urlopen(requestUrl).read()
+        snpMap = DataBridge.getSNPSummaryCallback(content)
+        # map is rsNum: chr, chrIndex, maf
         DataBridge.saveToFile(str(snpMap), filename)
-        Log.info("Saved allele frequency map for %s mutations" % len(snpMap))
+        Log.info("Saved SNP location and frequency data map for %s mutations" % len(snpMap))
 
 
     @staticmethod
@@ -191,7 +189,10 @@ class DataBridge:
     def downloadPhastCons(filename, mutations):
         if mutations[0].get_chromosome() == -1:
             # need genomic location (obtained through allele frequency download)
-            DataBridge.downloadSNPData(AVAILABLE_FEATURES['allele-frequency'][1], mutations)
+            snpMap = DataBridge.loadMap(Feature(*AVAILABLE_FEATURES['allele-frequency']), mutations)
+            for m in mutations:
+                m.add_chromosome(snpMap.get(m.get_rs_number(), (-1, -1, "?"))[0])
+                m.add_chr_index(snpMap.get(m.get_rs_number(), (-1, -1, "?"))[1])
 
         cnx = mysql.connector.connect(user='genome',
                                       host='genome-mysql.soe.ucsc.edu',
@@ -233,31 +234,38 @@ class DataBridge:
 
     @staticmethod
     def getSNPSummaryCallback(content):
-        chr = -1
-        chrIndex = -1
-        maf = "?"
-        try:
-            xmlTree = ET.fromstring(content)
-            record = xmlTree.find('DocSum')
-            for item in record.findall('Item'):
-                if item.attrib['Name'] == 'GLOBAL_MAF':
-                    try:
-                        maf = item.text
-                        maf = float(maf.split("=")[1].split("/")[0])
-                    except:
-                        maf = "?"
-                    continue
-                elif item.attrib['Name'] == 'CHRPOS':
-                    chr, chrIndex = item.text.split(":")
-                    chrIndex = long(chrIndex)
-                    continue
-        except: pass
-        return chr, chrIndex, maf
+        snpMap = {}
+        xmlTree = ET.fromstring(content)
+        for docSum in xmlTree.findall('DocSum'):
+            rsNum = -1
+            chr = -1
+            chrIndex = -1
+            maf = "?"
+            try:
+                rsNum = docSum.find("Id").text
+                for item in docSum.findall('Item'):
+                    if item.attrib['Name'] == 'GLOBAL_MAF':
+                        try:
+                            maf = item.text
+                            maf = float(maf.split("=")[1].split("/")[0])
+                        except:
+                            maf = "?"
+                        continue
+                    elif item.attrib['Name'] == 'CHRPOS':
+                        chr, chrIndex = item.text.split(":")
+                        chrIndex = long(chrIndex)
+                        continue
+            except: pass
+            snpMap[rsNum] = (chr, chrIndex, maf)
+
+        return snpMap
 
     @staticmethod
-    def getSNPSummaryRequest(rsNum):
+    def getSNPSummaryRequest(mutations):
         url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
-            .format(rsNum)
+            .format(mutations[0].get_rs_number())
+        for m in mutations[1:]:
+            url += "," + str(m.get_rs_number())
         return url
 
 
@@ -278,9 +286,9 @@ class DataBridge:
         feature.set_filename(feature.get_fileName() + "test")
         try: os.remove(feature.get_fileName())
         except: pass
-        mafMap = DataBridge.loadMap(feature, mutations)
-        assert mafMap["374997012"] == "?"
-        assert mafMap["2228241"] == 0.0004
+        snpMap = DataBridge.loadMap(feature, mutations)
+        assert snpMap["374997012"][2] == "?"
+        assert snpMap["2228241"][2] == 0.0004
 
     @staticmethod
     def pcTest(mutations):
@@ -295,6 +303,8 @@ class DataBridge:
     @staticmethod
     def genLocationTest(mutations):
         filename = AVAILABLE_FEATURES['allele-frequency'][1] + "test"
+        try: os.remove(filename)
+        except: pass
         DataBridge.downloadSNPData(filename, mutations)
         assert mutations[0].get_chromosome() == "10"
         assert mutations[0].get_chr_index() == 100989114L
