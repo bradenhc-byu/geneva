@@ -35,7 +35,14 @@ class Wrangler:
 
 
 
-    def populateWekaData(self):
+    def populateWekaData(self, loadFromCloud=False):
+        for feature in self.__wekaData.getFeatures():
+            if loadFromCloud:
+                try:
+                    os.remove(feature.get_fileName())
+                    Log.debug("Deleting %s to re-download data" % (feature.get_fileName()))
+                except: pass
+
         # populate feature data
         for feature in self.__wekaData.getFeatures():
             Log.info("Gathering %s data for %d mutations" % (feature.get_name(), len(self.__wekaData.getMutations())))
