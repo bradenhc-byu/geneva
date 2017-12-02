@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 WEKA RESULTS ================================
 
 weka.classifiers.trees.RandomTree--------------
-Correctly Classified Instances       41744               74.6949 %
+Correctly Classified Instances       41920               75.0098 %
 
-=======
-WEKA RESULTS ================================
-
-weka.classifiers.trees.RandomTree--------------
->>>>>>> ee4c500dceac55b8f2d6cf7fc799792282bf6946
