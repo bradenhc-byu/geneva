@@ -28,8 +28,10 @@ class GeneVIA(cmd.Cmd):
 
     def do_run(self, line):
         """
-        \rrun [-a] [-f] [-m] [-l] [-s] := Execute the program using the provided 
-        \r                                arguments
+        \rrun [-a <agorithms>] [-f <features>] [-m <mutation>] [-s <file>] [-l] [-d]
+        \r
+        \r:= Use the Weka machine learning tool to analyze mutation feature
+        \r   using the provided arguments
         \r
         \r-a algorithm
         \r   Comma separated list of different Weka algorithms to run.
@@ -37,7 +39,7 @@ class GeneVIA(cmd.Cmd):
         \r-f features
         \r   Comma separated list of features you want to use in training Weka.
         \r       
-        \r-m mutation
+        \r-m mutation [currently not implemented]
         \r   Determine the condition of the mutation based on the provided 
         \r   features and Weka machine learning
         \r   
@@ -123,6 +125,10 @@ class GeneVIA(cmd.Cmd):
         WekaController.run_weka(wekaData, saveFile)
 
         # Get our return value
+        result_filename = DATA_DIR + "weka_results.txt"
+        with open(result_filename, "r") as result_file:
+            for line in result_file:
+                print line.rstrip()
 
     def complete_run(self, text, line, begidx, endidx):
         if begidx > 2:
