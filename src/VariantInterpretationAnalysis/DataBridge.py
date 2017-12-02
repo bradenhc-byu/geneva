@@ -5,6 +5,7 @@
 #
 
 import httplib2 as http
+import httplib
 import json
 import os
 import re
@@ -173,9 +174,19 @@ class DataBridge:
         if os.path.exists(filename) and mutations[0].get_chromosome() != -1: return
         snpMap = {}
 
-        requestUrl = DataBridge.getSNPSummaryRequest(mutations)
-        content = urllib2.urlopen(requestUrl).read()
-        snpMap = DataBridge.getSNPSummaryCallback(content)
+        #split up into chunks
+        requestUrls = DataBridge.getSNPSummaryRequest(mutations)
+        content = ""
+        snpMap = {}
+        i = 0
+        while i < len(requestUrls):
+            requestUrl = requestUrls[i]
+            try: content = urllib2.urlopen(requestUrl).read()
+            except httplib.IncompleteRead, e:
+                content = e.partial
+            Log.debug("SNP data for chunk %d of %d downloaded" % (i+1, len(requestUrls)))
+            if DataBridge.getSNPSummaryCallback(content, snpMap):
+                i += 1
         # map is rsNum: chr, chrIndex, maf
         DataBridge.saveToFile(str(snpMap), filename)
         Log.info("Saved SNP location and frequency data map for %s mutations" % len(snpMap))
@@ -213,7 +224,7 @@ class DataBridge:
                 for scores in cursor:
                     assert len(scores) == 1
                     score = scores[0]
-                    Log.debug("Mutation rs%s has PhastCon score %d" % (m.get_rs_number(), score))
+                    Log.debug("Mutation rs%d has PhastCons score %d" % (m.get_rs_number(), score))
             except: pass
             pcMap[m.get_rs_number()] = score
 
@@ -227,16 +238,15 @@ class DataBridge:
             Log.info("Cached file not found. Downloading %s data" % feature.get_name())
             DataBridge.loadDispatcher[feature.get_name()](filename, params)
         myMap = DataBridge.openFromFile(filename)
-        #print str(myMap)
         Log.info("Loading map for %s" % feature.get_name())
         return myMap
 
 
 
     @staticmethod
-    def getSNPSummaryCallback(content):
-        snpMap = {}
-        xmlTree = ET.fromstring(content)
+    def getSNPSummaryCallback(content, snpMap):
+        try: xmlTree = ET.fromstring(content)
+        except: return False
         for docSum in xmlTree.findall('DocSum'):
             rsNum = -1
             chr = -1
@@ -259,15 +269,20 @@ class DataBridge:
             except: pass
             snpMap[rsNum] = (chr, chrIndex, maf)
 
-        return snpMap
+        return True
 
     @staticmethod
     def getSNPSummaryRequest(mutations):
-        url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
-            .format(mutations[0].get_rs_number())
-        for m in mutations[1:]:
-            url += "," + str(m.get_rs_number())
-        return url
+        # split up into chunks
+        chunkSize = 500
+        urls = []
+        for i in range(0, len(mutations), chunkSize):
+            url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=snp&id={}'\
+                .format(mutations[i].get_rs_number())
+            for m in mutations[i+1:i+chunkSize]:
+                url += "," + str(m.get_rs_number())
+            urls.append(url)
+        return urls
 
 
     @staticmethod
