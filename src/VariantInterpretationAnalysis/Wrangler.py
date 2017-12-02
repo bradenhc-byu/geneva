@@ -8,7 +8,7 @@
 # Returns populated WekaData object
 
 from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES
-from Collections import Mutation, Feature
+from Collections import Mutation, Feature, WekaData
 import Parser
 import os
 import DataBridge
@@ -18,30 +18,22 @@ class Wrangler:
     def __init__(self, wekaData):
         self.__wekaData = wekaData
 
+    @staticmethod
     def addGeneFamilyToMutation(mutation, gfMap):
         mutation.add_feature("GENE_FAMILY", gfMap.get(mutation.get_gene(),"?"))
         return True
 
     @staticmethod
     # MAF stands for minor allele frequency
-    def addAlleleFreqToMutation(mutation, mafMap):
-        mutation.add_feature("ALLELE_FREQUENCY", mafMap.get(mutation.get_rs_number(), "?"))
+    def addAlleleFreqToMutation(mutation, snpMap):
+        mutation.add_feature("ALLELE_FREQUENCY", snpMap.get(mutation.get_rs_number(), (-1, -1, "?"))[2])
         return True
 
-    def addPhastConsToMutation(self, mutation, pcMap):
+    @staticmethod
+    def addPhastConsToMutation(mutation, pcMap):
         mutation.add_feature("PHAST_CONS", pcMap.get(mutation.get_rs_number(), "?"))
 
-    # dict of feature type to function
-    dispatcher = {
-        "GENE_FAMILY": addGeneFamilyToMutation,
-        'ALLELE_FREQUENCY': addAlleleFreqToMutation,
-        "PHAST_CONS": addPhastConsToMutation
-        #"y": addYToMutation()
-    }
 
-    parserDispatcher = {
-
-    }
 
     def populateWekaData(self):
         # populate feature data
@@ -52,3 +44,38 @@ class Wrangler:
             addFeature = Wrangler.dispatcher[feature.get_name()]
             for m in self.__wekaData.getMutations():
                 addFeature(m, dataMap)
+
+# dict of feature type to function
+Wrangler.dispatcher = {
+    "GENE_FAMILY": Wrangler.addGeneFamilyToMutation,
+    'ALLELE_FREQUENCY': Wrangler.addAlleleFreqToMutation,
+    "PHAST_CONS": Wrangler.addPhastConsToMutation
+    #"y": addYToMutation()
+}
+
+def feature_test_setup(feature, wekaData):
+    feature.set_filename(feature.get_fileName() + "test")
+    try: os.remove(feature.get_fileName())
+    except: pass
+    wekaData.addFeature(feature)
+
+def unit_test():
+    mutations = [Mutation("name", gene="TWNK", rs_num="374997012"),
+                 Mutation("blabla", gene="FBN1", rs_num="2228241"),
+                 Mutation("junk", gene="xylophoneMonster", rs_num="rubbish")]
+
+    wekaData = WekaData()
+    feature_test_setup(Feature(*AVAILABLE_FEATURES['allele-frequency']), wekaData)
+    feature_test_setup(Feature(*AVAILABLE_FEATURES['phast-cons']), wekaData)
+    feature_test_setup(Feature(*AVAILABLE_FEATURES['gene-family']), wekaData)
+
+    for m in mutations:
+        wekaData.addMutation(m)
+
+    wrangler = Wrangler(wekaData)
+    wrangler.populateWekaData()
+
+    Log.debug("WRANGLER UNIT TESTS PASSED")
+
+if __name__ == "__main__":
+    unit_test()

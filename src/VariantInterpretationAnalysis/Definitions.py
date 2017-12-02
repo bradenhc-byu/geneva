@@ -18,7 +18,7 @@ AVAILABLE_FEATURES = {
                     DATA_DIR + "geneFamilyData.txt",
                     "string"),
     "allele-frequency": ("ALLELE_FREQUENCY",
-                         DATA_DIR + "alleleFreqData.txt",
+                         DATA_DIR + "snpData.txt",
                          "numeric"),
     "phast-cons": ("PHAST_CONS",
                    DATA_DIR + "phastConsData.txt",
