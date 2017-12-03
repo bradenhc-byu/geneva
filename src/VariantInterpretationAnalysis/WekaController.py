@@ -11,14 +11,16 @@ import Logger as Log
 from Definitions import DATA_DIR
 import Configuration
 import os
+import platform
 
 
 def run_weka(weka_data, weka_file):
     filepath = DATA_DIR + weka_file
     if os.path.exists(filepath):
-        Log.info("Filtering mutation ARFF file")
-        filtered_weka_filepath = filter_mutations(filepath)
-        Log.info("Pushing data to weka...")
+        Log.info("Converting any strings to nominal values...")
+        converted_weka_filepath = convert_arff_to_all_nominal(filepath)
+        Log.info("Filtering mutation ARFF file...")
+        filtered_weka_filepath = filter_mutations(converted_weka_filepath)
         results_file = open(DATA_DIR + "weka_results.txt", "w")
         results_file.write("WEKA RESULTS ================================\n\n")
         # Run the specified algorithms on the data and get the results
@@ -46,7 +48,24 @@ def run_weka(weka_data, weka_file):
     else:
         Log.error("Unable to run weka: file'" + filepath + "' does not exist")
         return False
+    Log.debug("Removing temporary output file")
+    try:
+        os.remove("./tmp_output")
+    except OSError as e:  # name the Exception `e`
+        print "Failed with:", e.strerror  # look what it says
+        print "Error code:", e.code
     return True
+
+def convert_arff_to_all_nominal(weka_filepath):
+    weka_path = Configuration.getConfig("weka_path")
+    converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
+    convert_command = "java -cp {0} " \
+                      "weka.filters.unsupervised.attribute.StringToNominal " \
+                      "-R first -i {1} -o {2}".format(weka_path,
+                                                     weka_filepath,
+                                                     converted_filepath)
+    os.system(convert_command)
+    return converted_filepath
 
 def filter_mutations(weka_filepath):
     weka_path = Configuration.getConfig("weka_path")
@@ -64,11 +83,17 @@ def filter_mutations(weka_filepath):
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
     weka_path = Configuration.getConfig("weka_path")
+    grep_command = "grep" if platform.system().lower() != "windows" else \
+        "findstr"
     if weka_path is None:
         Log.error("Unable to build Weka command: weka path not set")
         return None
-    return "java -cp {0} {1} -t {2} -v | grep Correctly > " \
-           "{3}".format(weka_path, algorithm, weka_file, result_file)
+    return "java -cp {0} {1} -t {2} -v | {3} Correctly > " \
+           "{4}".format(weka_path,
+                        algorithm,
+                        weka_file,
+                        grep_command,
+                        result_file)
 
 
 

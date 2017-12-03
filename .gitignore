@@ -13,3 +13,6 @@
 
 # Ignore the configuration files
 src/VariantInterpretationAnalysis/genevia.config
+
+# Ignore the data files being updated by the program
+src/VariantInterpretationAnalysis/data

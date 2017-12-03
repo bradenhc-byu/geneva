@@ -92,6 +92,7 @@ class DataBridge:
         except:
             data2 = ["?"]
             data3 = ["?"]
+
         #print "GeneFamily: "+data2
         return data3
 

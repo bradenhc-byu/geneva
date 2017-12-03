@@ -16,7 +16,7 @@ DATA_DIR = os.path.join(ROOT_DIR, "data/")
 AVAILABLE_FEATURES = {
     "gene-family": ("GENE_FAMILY",
                     DATA_DIR + "geneFamilyData.txt",
-                    "string"),
+                    "numeric"),
     "allele-frequency": ("ALLELE_FREQUENCY",
                          DATA_DIR + "snpData.txt",
                          "numeric"),
