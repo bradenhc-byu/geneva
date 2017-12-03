@@ -100,8 +100,8 @@ class Mutation:
     def get_feature(self, feature):
         return self.__features.get(feature, None)
 
-    def add_chromosome(self, chr):
-        self.__chromosome = chr
+    def add_chromosome(self, chrom):
+        self.__chromosome = chrom
         return True
 
     def add_chr_index(self, chrIndex):

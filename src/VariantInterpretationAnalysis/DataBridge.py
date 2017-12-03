@@ -5,6 +5,7 @@
 #
 
 import httplib2 as http
+import sqlite3
 import httplib
 import json
 import os
@@ -19,7 +20,7 @@ from Collections import Mutation,Feature
 import pyodbc
 import mysql.connector
 import Logger as Log
-from Definitions import AVAILABLE_FEATURES
+from Definitions import AVAILABLE_FEATURES,DATA_DIR
 
 class DataBridge:
 
@@ -91,7 +92,6 @@ class DataBridge:
         except:
             data2 = ["?"]
             data3 = ["?"]
-            Log.error("Couldn't find gene family for " + data['response']['docs'][0]['symbol'])
         #print "GeneFamily: "+data2
         return data3
 
@@ -197,33 +197,44 @@ class DataBridge:
         queryString = "SELECT score WHERE "
 
     @staticmethod
+    def getPhastConsConnection():
+        phastConsDBPath = DATA_DIR + "phastCons.sql"
+        if not os.path.exists(phastConsDBPath):
+            #download table
+            pass
+        return sqlite3.connect(phastConsDBPath)
+
+    @staticmethod
     def downloadPhastCons(filename, mutations):
         if mutations[0].get_chromosome() == -1:
             # need genomic location (obtained through allele frequency download)
             snpMap = DataBridge.loadMap(Feature(*AVAILABLE_FEATURES['allele-frequency']), mutations)
             for m in mutations:
-                m.add_chromosome(snpMap.get(m.get_rs_number(), (-1, -1, "?"))[0])
-                m.add_chr_index(snpMap.get(m.get_rs_number(), (-1, -1, "?"))[1])
+                snpData = snpMap.get(m.get_rs_number(), (-1, -1, "?"))
+                m.add_chromosome(snpData[0])
+                m.add_chr_index(snpData[1])
 
         cnx = mysql.connector.connect(user='genome',
                                       host='genome-mysql.soe.ucsc.edu',
                                       database='hg38')
         cursor = cnx.cursor()
         query = """SELECT score FROM phastConsElements20way 
-                            WHERE chrom = %s
+                            WHERE chrom = chr%s
                             AND chromStart <= %s
                             AND chromEnd >= %s"""
 
         pcMap = {}
-        for m in mutations:
+        for i in range(len(mutations)):
+            if i in [len(mutations)/10 * x for x in range(1,10)]:
+                Log.info("PhastCons data downloaded for %d of %d mutations" % (i, len(mutations)))
+            m = mutations[i]
             score = "?"
             try:
-                chrString = "chr" + m.get_chromosome()
-                cursor.execute(query, (chrString, m.get_chr_index(), m.get_chr_index()))
+                cursor.execute(query, (m.get_chromosome(), m.get_chr_index(), m.get_chr_index()))
                 for scores in cursor:
                     assert len(scores) == 1
                     score = scores[0]
-                    Log.debug("Mutation rs%d has PhastCons score %d" % (m.get_rs_number(), score))
+                    # Log.debug("Mutation rs%d has PhastCons score %d" % (m.get_rs_number(), score))
             except: pass
             pcMap[m.get_rs_number()] = score
 
@@ -266,7 +277,7 @@ class DataBridge:
                         chrIndex = long(chrIndex)
                         continue
             except: pass
-            snpMap[rsNum] = (chr, chrIndex, maf)
+            snpMap[int(rsNum)] = (chr, chrIndex, maf)
 
         return True
 
