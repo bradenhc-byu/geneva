@@ -91,7 +91,8 @@ class DataBridge:
         except:
             data2 = ["?"]
             data3 = ["?"]
-            Log.error("Couldn't find gene family for " + data['response']['docs'][0]['symbol'])
+            Log.error("Couldn't find gene family for " +
+                      data['response']['docs'][0]['symbol'])
         #print "GeneFamily: "+data2
         return data3
 

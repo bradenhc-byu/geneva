@@ -6,7 +6,7 @@
 #
 
 # Import the required files
-import cmd
+import VariantInterpretationAnalysis.CommandLine as cmd
 import VariantInterpretationAnalysis.Logger as Log
 from VariantInterpretationAnalysis.Definitions import *
 from VariantInterpretationAnalysis.Collections import WekaData, Feature
@@ -28,8 +28,10 @@ class GeneVIA(cmd.Cmd):
 
     def do_run(self, line):
         """
-        \rrun [-a] [-f] [-m] [-l] [-s] := Execute the program using the provided 
-        \r                                arguments
+        \rrun [-a <agorithms>] [-f <features>] [-m <mutation>] [-s <file>] [-l] [-d]
+        \r
+        \r:= Use the Weka machine learning tool to analyze mutation feature
+        \r   using the provided arguments
         \r
         \r-a algorithm
         \r   Comma separated list of different Weka algorithms to run.
@@ -37,7 +39,7 @@ class GeneVIA(cmd.Cmd):
         \r-f features
         \r   Comma separated list of features you want to use in training Weka.
         \r       
-        \r-m mutation
+        \r-m mutation [currently not implemented]
         \r   Determine the condition of the mutation based on the provided 
         \r   features and Weka machine learning
         \r   
@@ -123,10 +125,35 @@ class GeneVIA(cmd.Cmd):
         WekaController.run_weka(wekaData, saveFile)
 
         # Get our return value
+        result_filename = DATA_DIR + "weka_results.txt"
+        with open(result_filename, "r") as result_file:
+            for line in result_file:
+                print line.rstrip()
 
     def complete_run(self, text, line, begidx, endidx):
-        if not text:
-            return ["test"]
+        if begidx > 2:
+            # Auto complete for algorithms
+            if line.find("-a") != -1 and \
+                (line.find("-a") > line.find("-f")
+                and line.find("-a") > line.find("-l")
+                and line.find("-a") > line.find("-d"))\
+                and line.find("-a") > line.find("-m"):
+                    if not text:
+                        return AVAILABLE_ALGORITHMS.keys()[:]
+                    return [a for a in AVAILABLE_ALGORITHMS.keys()
+                            if a.startswith(text)]
+
+            # Auto complete for features
+            if line.find("-f") != -1 and \
+                (line.find("-f") > line.find("-a")
+                and line.find("-f") > line.find("-l")
+                and line.find("-f") > line.find("-d"))\
+                and line.find("-f") > line.find("-m"):
+                    if not text:
+                        return AVAILABLE_FEATURES.keys()[:]
+                    return [f for f in AVAILABLE_FEATURES.keys()
+                            if f.startswith(text)]
+        return []
 
 
     def do_log(self, line):
@@ -158,6 +185,33 @@ class GeneVIA(cmd.Cmd):
         elif command == "disable":
             Log.disable()
 
+    def complete_log(self, text, line, begidx, endidx):
+        if begidx == 4:
+            options = ["enable", "disable", "set"]
+            if endidx == 4:
+                return options
+            return [o for o in options if o.startswith(text)]
+        if line.find("enable") != -1 or line.find("disable") != -1:
+            return []
+        if line.find("set") != -1:
+            if line.find("level") != -1 \
+            and line.find("level") > line.find("set"):
+                level_options = ["debug", "info", "warn", "error"]
+                if not text:
+                    return level_options
+                return [o for o in level_options if o.startswith(text)]
+            if line.find("output") != -1 \
+            and line.find("output") > line.find("set"):
+                file_options = ["stdout", "file"]
+                if not text:
+                    return file_options
+                return [o for o in file_options if o.startswith(text)]
+            set_options = ["level", "output", "file"]
+            if not text:
+                return set_options
+            return [o for o in set_options if o.startswith(text)]
+        return []
+
     def do_exit(self, line):
         """
         \rexit := exit the program
@@ -166,18 +220,9 @@ class GeneVIA(cmd.Cmd):
 
 # Start program ----------------------------------------------------------------
 # All this will be happening inside a terminal like event loop
-import sys
+
 
 if __name__ == "__main__":
-
-    try:
-        import readline
-    except ImportError:
-        sys.stdout.write(
-            "No readline module found, no tab completion available.\n")
-    else:
-        import rlcompleter
-        readline.parse_and_bind('tab: complete')
 
     # Initialize configuration
     Configuration.init("genevia.config")

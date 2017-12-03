@@ -1,3 +1,5 @@
 WEKA RESULTS ================================
 
 weka.classifiers.trees.RandomTree--------------
+Correctly Classified Instances       41920               75.0098 %
+
