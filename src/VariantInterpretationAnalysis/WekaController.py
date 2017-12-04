@@ -61,7 +61,7 @@ def convert_arff_to_all_nominal(weka_filepath):
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
                       "weka.filters.unsupervised.attribute.StringToNominal " \
-                      "-R first -i {1} -o {2}".format(weka_path,
+                      "-R first -i \"{1}\" -o \"{2}\"".format(weka_path,
                                                      weka_filepath,
                                                      converted_filepath)
     os.system(convert_command)
@@ -73,8 +73,8 @@ def filter_mutations(weka_filepath):
     filter_command = "java -cp {0} " \
                      "weka.filters.supervised.attribute.AttributeSelection -E " \
                      "\"weka.attributeSelection.CfsSubsetEval -M\" -S " \
-                     "\"weka.attributeSelection.BestFirst -D 1 -N 5\" -i " \
-                     "{1} -o {2}".format(weka_path,
+                     "\"weka.attributeSelection.BestFirst -P 95,96,97 -D 1 -N 5\" -i " \
+                     "\"{1}\" -o \"{2}\"".format(weka_path,
                                          weka_filepath,
                                          filtered_weka_filepath)
     os.system(filter_command)
@@ -88,7 +88,7 @@ def build_command(algorithm, weka_file, result_file="./tmp_output"):
     if weka_path is None:
         Log.error("Unable to build Weka command: weka path not set")
         return None
-    return "java -cp {0} {1} -t {2} -v | {3} Correctly > " \
+    return "java -cp {0} {1} -t \"{2}\" -v | {3} Correctly > " \
            "{4}".format(weka_path,
                         algorithm,
                         weka_file,
