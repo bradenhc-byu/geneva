@@ -50,10 +50,10 @@ def run_weka(weka_data, weka_file):
         return False
     Log.debug("Removing temporary output file")
     try:
-        os.remove("./tmp_output")
-    except OSError as e:  # name the Exception `e`
-        print "Failed with:", e.strerror  # look what it says
-        print "Error code:", e.code
+        os.remove(tmp_output)
+    except OSError as e:
+        Log.error("Failed with:", e.strerror)
+        print Log.error("Error code:", e.code)
     return True
 
 def convert_arff_to_all_nominal(weka_filepath):
