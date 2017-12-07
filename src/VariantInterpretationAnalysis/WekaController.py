@@ -97,7 +97,7 @@ def build_command(algorithm, weka_file, result_file="./tmp_output"):
     if weka_path is None:
         Log.error("Unable to build Weka command: weka path not set")
         return None
-    return "java -cp {0} {1} -t \"{2}\" -v | {3} Correctly > " \
+    return "java -Xms512m -Xmx1024m -cp {0} {1} -t \"{2}\" -v | {3} Correctly > " \
            "{4}".format(weka_path,
                         algorithm,
                         weka_file,
