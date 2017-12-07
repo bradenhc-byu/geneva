@@ -198,6 +198,10 @@ class WekaData:
         self.__mutations.append(mutation)
         return True
 
+    def addMutations(self, mutations):
+        self.__mutations.extend(mutations)
+        return True
+
     def getFeatures(self):
         return self.__features
 

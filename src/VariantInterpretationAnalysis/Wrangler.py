@@ -13,6 +13,7 @@ import Parser
 import os
 import DataBridge
 import Logger as Log
+import copy
 
 class Wrangler:
     def __init__(self, wekaData):
@@ -20,8 +21,17 @@ class Wrangler:
 
     @staticmethod
     def addGeneFamilyToMutation(mutation, gfMap):
-        mutation.add_feature("GENE_FAMILY", gfMap.get(mutation.get_gene(),"?"))
-        return True
+        gfList = gfMap.get(mutation.get_gene(), ['?'])
+        extraMutations = []
+        for gf in gfList[1:]:
+            # make repeat mutations for additional gene families
+            m = copy.deepcopy(mutation)
+            m.add_feature("GENE_FAMILY", gf)
+            extraMutations.append(m)
+        # assign first gene family to mutation passed in
+        mutation.add_feature("GENE_FAMILY", gfList[0])
+        # returns extra mutations (when mutation has more than one gene family) to be added to mutations
+        return extraMutations
 
     @staticmethod
     # MAF stands for minor allele frequency
@@ -49,8 +59,15 @@ class Wrangler:
             dataMap = DataBridge.DataBridge.loadMap(feature, self.__wekaData.getMutations())
             
             addFeature = Wrangler.dispatcher[feature.get_name()]
+            mutationsToAdd = []
             for m in self.__wekaData.getMutations():
-                addFeature(m, dataMap)
+                potentialExtraMutations = addFeature(m, dataMap)
+                if type(potentialExtraMutations) is list:
+                    mutationsToAdd.extend(potentialExtraMutations)
+                # else should be True (fr
+                else:
+                    assert type(potentialExtraMutations) == bool
+            self.__wekaData.addMutations(mutationsToAdd)
 
 # dict of feature type to function
 Wrangler.dispatcher = {
