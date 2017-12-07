@@ -5,7 +5,6 @@
 #
 
 import httplib2 as http
-import sqlite3
 import httplib
 import json
 import os
@@ -15,10 +14,10 @@ try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
-from Collections import Mutation,Feature
+from Collections import Mutation, Feature
 import mysql.connector
 import Logger as Log
-from Definitions import AVAILABLE_FEATURES,DATA_DIR
+from Definitions import AVAILABLE_FEATURES, DATA_DIR
 
 class DataBridge:
 
