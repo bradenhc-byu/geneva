@@ -21,30 +21,35 @@ def run_weka(weka_data, weka_file):
         converted_weka_filepath = convert_arff_to_all_nominal(filepath)
         Log.info("Filtering mutation ARFF file...")
         filtered_weka_filepath = filter_mutations(converted_weka_filepath, weka_data)
-        results_file = open(DATA_DIR + "weka_results.txt", "w")
-        results_file.write("WEKA RESULTS ================================\n\n")
         # Run the specified algorithms on the data and get the results
         # We write the output to a temporary file, from which we print the
         # results
         classifier_algorithms = weka_data.getAlgorithms()
+        results_file = open(DATA_DIR + "weka_results.txt", "w")
+        results_file.write("WEKA RESULTS ================================\n\n")
+        results_file.close()
         if classifier_algorithms:
             for algorithm in classifier_algorithms:
+                results_file = open(DATA_DIR + "weka_results.txt", "a")
                 Log.info("Running " + algorithm + "...")
                 results_file.write(algorithm + "--------------\n")
                 tmp_output = "./tmp_output"
                 command = build_command(algorithm, filtered_weka_filepath,
                                         tmp_output)
+                #print(command)
                 if command is None:
                     return False
                 os.system(command)
                 with open(tmp_output, "r") as tmp_output_file:
                     for tmp_result_line in tmp_output_file:
                         results_file.write(tmp_result_line.rstrip() + "\n\n")
+                        print(tmp_result_line.rstrip())
+                results_file.close()
 
         else:
             Log.error("Unable to run weka: no specified algorithms")
             return False
-        results_file.close()
+        
     else:
         Log.error("Unable to run weka: file'" + filepath + "' does not exist")
         return False
@@ -57,7 +62,7 @@ def run_weka(weka_data, weka_file):
     return True
 
 def convert_arff_to_all_nominal(weka_filepath):
-    # weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    #weka_path = Configuration.getConfig("weka_path") #+ '"'
     weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
@@ -69,6 +74,7 @@ def convert_arff_to_all_nominal(weka_filepath):
     return converted_filepath
 
 def filter_mutations(weka_filepath, weka_data):
+    #weka_path = Configuration.getConfig("weka_path") #+ '"'
     weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     filtered_weka_filepath = weka_filepath.replace(".arff","_filtered.arff")
 
@@ -92,12 +98,14 @@ def filter_mutations(weka_filepath, weka_data):
 
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
+    #weka_path = Configuration.getConfig("weka_path") #+ '"'
     weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     grep_command = "grep" if platform.system().lower() != "windows" else \
         "findstr"
     if weka_path is None:
         Log.error("Unable to build Weka command: weka path not set")
         return None
+    #return "java -Xms512m -Xmx1024m -cp {0} {1} -t \"{2}\" -v | findstr Correctly > " \
     return "java -Xms512m -Xmx1024m -cp {0} {1} -t \"{2}\" -v | {3} Correctly > " \
            "{4}".format(weka_path,
                         algorithm,
