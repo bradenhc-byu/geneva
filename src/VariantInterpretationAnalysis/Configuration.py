@@ -17,7 +17,7 @@ def init(filename):
                     continue
                 pair = line.split(":")
                 key = pair[0].strip()
-                value = pair[1].strip()
+                value = ":".join(pair[1:]).strip()
                 __configuration_map[key] = value
     else:
         print "[ERROR] Configuration failed: file does not exist:", file_path
