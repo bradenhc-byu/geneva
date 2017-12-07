@@ -42,7 +42,7 @@ class Wrangler:
     @staticmethod
     def addPhastConsToMutation(mutation, pcMap):
         mutation.add_feature("PHAST_CONS", pcMap.get(mutation.get_rs_number(), "?"))
-
+        return True
 
 
     def populateWekaData(self, loadFromCloud=False):

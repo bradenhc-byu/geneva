@@ -57,7 +57,8 @@ def run_weka(weka_data, weka_file):
     return True
 
 def convert_arff_to_all_nominal(weka_filepath):
-    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    # weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
                       "weka.filters.unsupervised.attribute.StringToNominal " \
