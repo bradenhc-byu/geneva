@@ -12,7 +12,7 @@
 **.py[cod]
 
 # Ignore the configuration files
-src/VariantInterpretationAnalysis/genevia.config
+**genevia.config
 
 # Ignore the data files being updated by the program
 src/VariantInterpretationAnalysis/data/
