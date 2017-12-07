@@ -4,6 +4,9 @@
 # Main python file that runs the VIA gui and event loop. This is where all the
 # magic starts.
 #
+import os
+os.system("pip install httplib2")
+os.system("pip install mysql-connector==2.1.6")
 
 # Import the required files
 import VariantInterpretationAnalysis.CommandLine as cmd
@@ -17,7 +20,6 @@ from VariantInterpretationAnalysis import WekaPrimer
 from VariantInterpretationAnalysis import WekaController
 from VariantInterpretationAnalysis import Configuration
 
-import os
 
 class GeneVIA(cmd.Cmd):
     """
@@ -218,8 +220,6 @@ class GeneVIA(cmd.Cmd):
 
 if __name__ == "__main__":
 
-    os.system("pip install httplib2")
-    os.system("pip install mysql-connector==2.1.6")
 
     # Initialize configuration
     Configuration.init("genevia.config")
