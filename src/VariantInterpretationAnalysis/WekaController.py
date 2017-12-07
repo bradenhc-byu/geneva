@@ -20,9 +20,7 @@ def run_weka(weka_data, weka_file):
         Log.info("Converting any strings to nominal values...")
         converted_weka_filepath = convert_arff_to_all_nominal(filepath)
         Log.info("Filtering mutation ARFF file...")
-        filtered_weka_filepath = filter_mutations(converted_weka_filepath)
-        
-        
+        filtered_weka_filepath = filter_mutations(converted_weka_filepath, weka_data)
         # Run the specified algorithms on the data and get the results
         # We write the output to a temporary file, from which we print the
         # results
@@ -65,27 +63,36 @@ def run_weka(weka_data, weka_file):
 
 def convert_arff_to_all_nominal(weka_filepath):
     #weka_path = Configuration.getConfig("weka_path") #+ '"'
-    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
                       "weka.filters.unsupervised.attribute.StringToNominal " \
-                      "-R first -i \"{1}\" -o \"{2}\"".format(weka_path,
+                      "-R first-last -i \"{1}\" -o \"{2}\"".format(weka_path, 
                                                      weka_filepath,
                                                      converted_filepath)
     os.system(convert_command)
     return converted_filepath
 
-def filter_mutations(weka_filepath):
+def filter_mutations(weka_filepath, weka_data):
     #weka_path = Configuration.getConfig("weka_path") #+ '"'
     weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     filtered_weka_filepath = weka_filepath.replace(".arff","_filtered.arff")
+
+    # create string to capture all non-default features (e.g., 95,96,97)
+    start_index = len(weka_data.getDefaultFeatures()) + 1
+    feature_indices = []
+    for i in range(start_index, start_index + len(weka_data.getFeatures())):
+        feature_indices.append(str(i))
+    feature_indices = ",".join(feature_indices)
+
     filter_command = "java -cp {0} " \
                      "weka.filters.supervised.attribute.AttributeSelection -E " \
                      "\"weka.attributeSelection.CfsSubsetEval -M\" -S " \
-                     "\"weka.attributeSelection.BestFirst -P 95,96,97 -D 1 -N 5\" -i " \
+                     "\"weka.attributeSelection.BestFirst -P {3} -D 1 -N 5\" -i " \
                      "\"{1}\" -o \"{2}\"".format(weka_path,
                                          weka_filepath,
-                                         filtered_weka_filepath)
+                                         filtered_weka_filepath,
+                                         feature_indices)
     os.system(filter_command)
     return filtered_weka_filepath
 

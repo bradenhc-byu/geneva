@@ -9,7 +9,6 @@ import sqlite3
 import httplib
 import json
 import os
-import re
 import urllib2
 import xml.etree.ElementTree as ET
 try: 
@@ -17,7 +16,6 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 from Collections import Mutation,Feature
-import pyodbc
 import mysql.connector
 import Logger as Log
 from Definitions import AVAILABLE_FEATURES,DATA_DIR
