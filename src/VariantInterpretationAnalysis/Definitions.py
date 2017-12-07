@@ -37,7 +37,7 @@ AVAILABLE_ALGORITHMS = {
     "logistic": "weka.classifiers.functions.Logistic",
     "multilayer-perceptron": "weka.classifiers.functions.MultilayerPerceptron",
     "sgd": "weka.classifiers.functions.SGD",
-    "sgd-text": "weka.classifiers.functions.SGDText",
+    "sgd-text": "weka.classifiers.functions.metaSGDText",
     "smo": "weka.classifiers.functions.SMO",
     "simple-logistic": "weka.classifiers.functions.SimpleLogistic",
     "voted-perceptron": "weka.classifiers.functions.VotedPerceptron",

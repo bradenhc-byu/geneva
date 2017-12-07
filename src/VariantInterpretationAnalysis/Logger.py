@@ -52,8 +52,10 @@ def set_log_level(level, settings=log_settings):
         "error": LEVEL_ERROR
     }
     if level not in levels.keys():
+        info("Invalid command. Log level unchanged.")
         return False
     settings.level = levels[level]
+    info("Log level set to " + level)
     return True
 
 def set_destination(dest, settings=log_settings):

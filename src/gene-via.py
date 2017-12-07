@@ -50,9 +50,6 @@ class GeneVIA(cmd.Cmd):
         \r-s save
         \r   Name of the file to save the ARFF formatted data to before executing
         \r   Weka. The default value is 'genevia_default.arff'
-        \r
-        \r-d debug
-        \r   Sets log level to debug
         """
 
         argv = line.split()
@@ -88,10 +85,6 @@ class GeneVIA(cmd.Cmd):
                         saveFile = argv[i + 1]
                         i += 1
 
-                    elif argv[i] == "-d":
-                        Log.set_log_level("debug")
-                        Log.debug("Log level is set to debug")
-                        i += 1
         except:
             Log.error("Unable to execute incorrectly formatted command")
             return False

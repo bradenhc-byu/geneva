@@ -50,14 +50,14 @@ def run_weka(weka_data, weka_file):
         return False
     Log.debug("Removing temporary output file")
     try:
-        os.remove("./tmp_output")
-    except OSError as e:  # name the Exception `e`
-        print "Failed with:", e.strerror  # look what it says
-        print "Error code:", e.code
+        os.remove(tmp_output)
+    except OSError as e:
+        Log.error("Failed with:", e.strerror)
+        print Log.error("Error code:", e.code)
     return True
 
 def convert_arff_to_all_nominal(weka_filepath):
-    weka_path = Configuration.getConfig("weka_path")
+    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
                       "weka.filters.unsupervised.attribute.StringToNominal " \
@@ -68,7 +68,7 @@ def convert_arff_to_all_nominal(weka_filepath):
     return converted_filepath
 
 def filter_mutations(weka_filepath):
-    weka_path = Configuration.getConfig("weka_path")
+    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     filtered_weka_filepath = weka_filepath.replace(".arff","_filtered.arff")
     filter_command = "java -cp {0} " \
                      "weka.filters.supervised.attribute.AttributeSelection -E " \
@@ -82,7 +82,7 @@ def filter_mutations(weka_filepath):
 
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
-    weka_path = Configuration.getConfig("weka_path")
+    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
     grep_command = "grep" if platform.system().lower() != "windows" else \
         "findstr"
     if weka_path is None:
