@@ -10,6 +10,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Directory of the data path
 DATA_DIR = os.path.join(ROOT_DIR, "data/")
+WEKA_PATH = os.path.join(ROOT_DIR, "libs/weka.jar")
 
 # List of available features to plug into Weka
 # Format is "<key>": (<name>, <filepath>, <weka data type>)
