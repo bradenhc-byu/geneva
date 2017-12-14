@@ -4,6 +4,15 @@ Gene Variant Analyzer Module (GeneVA)
 Contains the main user interface (command line interpreter) for analyzing mutation features with
 several different machine learning algorithms.
 """
+# Fix dependencies
+import os
+try:
+    os.system("module load python/2/7")
+except:
+    print "exception caught: no command 'module load' found on OS"
+os.system("pip install --user httplib2")
+os.system("pip install --user mysql-connector==2.1.6")
+
 # Import the required files
 import VariantInterpretationAnalysis.CommandLine as cmd
 import VariantInterpretationAnalysis.Logger as Log
@@ -15,8 +24,6 @@ from VariantInterpretationAnalysis import Wrangler
 from VariantInterpretationAnalysis import WekaPrimer
 from VariantInterpretationAnalysis import WekaController
 from VariantInterpretationAnalysis import Configuration
-
-import os
 
 
 class GeneVA(cmd.Cmd):
@@ -217,9 +224,6 @@ class GeneVA(cmd.Cmd):
 
 
 if __name__ == "__main__":
-
-    os.system("pip install httplib2")
-    os.system("pip install mysql-connector==2.1.6")
 
     # Initialize configuration
     # Configuration.init("genevia.config")
