@@ -6,9 +6,7 @@ Many diseases can be traced to mutations in the genes of the infected individual
 
 - Make sure that Python 2.7 is installed on the host machine
 - Decompress the geneva-{version}.tar.gz into the desired folder
-- Run the following command from inside the geneva-{version} folder:
-
-`python geneva.py`
+- Run the following command from inside the geneva-{version} folder: `python geneva.py`
 
 ### Software Design and Details
 To build upon the work completed in this field, we created our own program to predict the accuracy of various algorithms: the Gene Variant Analyzer (GeneVA). GeneVA gathers any combination of selected features from its repertoire, runs them through various machine learning models, and outputs the model accuracy on a test data set, effectively serving as a way to analyze combinations of features and machine learning algorithms in predicting deleterious mutations.
