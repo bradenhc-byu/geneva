@@ -130,6 +130,7 @@ def unit_test():
     WekaPrimer.write_to_file(weka_data, weka_file)
     run_weka(weka_data, weka_file=weka_file)
 
+
 if __name__ == "__main__":
     Configuration.init("genevia.config")
     unit_test()
