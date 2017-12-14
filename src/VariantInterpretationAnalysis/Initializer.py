@@ -1,8 +1,9 @@
-################################################################################
-# Initializer - Class
-#
-# Controls the initialization of the WekaData object used in the system.
-#
+"""
+Initializer Module
+
+Controls the initialization of a WekaData object, populating it with Mutation objects and default Features (amino
+acid properties)
+"""
 import os
 from Collections import WekaData, Feature
 from Parser import MutationInfoParser, aaindex2parser

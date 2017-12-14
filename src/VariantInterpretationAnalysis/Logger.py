@@ -1,8 +1,8 @@
-################################################################################
-# Simple logger
-#
-# Logs information to stdout or to a file, depending on the source
-#
+"""
+Logger Module
+
+Provides a very simple logging interface to use in GeneVA
+"""
 import os
 import time
 import datetime

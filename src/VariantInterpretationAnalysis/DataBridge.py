@@ -1,9 +1,8 @@
-################################################################################
-# DataBridge -- formulates and sends HTTP requests, saves responses
-#
-#
-#
-
+"""
+Databridge Module
+Receives data pull requests from the Wrangler and receives data using http socket connections and APIs from remote
+data repositories
+"""
 import httplib2 as http
 import httplib
 import json
@@ -18,6 +17,7 @@ from Collections import Mutation, Feature
 import mysql.connector
 import Logger as Log
 from Definitions import AVAILABLE_FEATURES, DATA_DIR
+
 
 class DataBridge:
 

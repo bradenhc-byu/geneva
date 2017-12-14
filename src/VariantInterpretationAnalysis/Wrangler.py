@@ -1,12 +1,12 @@
-#############################
-# Wrangler class
-#
-# Takes WekaData and populates desired features for each mutation
-# Gets feature values from data maps after calling the parser for the appropriate files, if they exist
-# If file does not exist, it fetches and saves the needed data first
-#
-# Returns populated WekaData object
+"""
+Wrangler Module
 
+Takes WekaData and populates desired features for each mutation
+Gets feature values from data maps after calling the parser for the appropriate files, if they exist
+If file does not exist, it fetches and saves the needed data first
+
+Returns populated WekaData object
+"""
 from Definitions import DATA_DIR,AMINO_ACIDS_3_1,AVAILABLE_FEATURES
 from Collections import Mutation, Feature, WekaData
 import Parser

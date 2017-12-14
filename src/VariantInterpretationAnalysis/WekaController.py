@@ -1,12 +1,12 @@
-################################################################################
-# Weka Controller Module
-#
-# Takes a fully populated WekaData object and the location of a fully populated
-# ARFF file containing mutation information from the WekaData object
-# and runs various machine learning algorithms on a filtered subset of the
-# data to determine which features are most effective in correctly classifying
-# mutation classifications.
-#
+"""
+WekaController Module
+
+Takes a fully populated WekaData object and the location of a fully populated
+ARFF file containing mutation information from the WekaData object
+and runs various machine learning algorithms on a filtered subset of the
+data to determine which features are most effective in correctly classifying
+mutation classifications.
+"""
 import Logger as Log
 from Definitions import DATA_DIR, WEKA_PATH
 import Configuration

@@ -1,10 +1,9 @@
-################################################################################
-# Gene Variant Interpretation Analysis
-#
-# Main python file that runs the VIA gui and event loop. This is where all the
-# magic starts.
-#
+"""
+Gene Variant Analyzer Module (GeneVA)
 
+Contains the main user interface (command line interpreter) for analyzing mutation features with
+several different machine learning algorithms.
+"""
 # Import the required files
 import VariantInterpretationAnalysis.CommandLine as cmd
 import VariantInterpretationAnalysis.Logger as Log
@@ -19,7 +18,8 @@ from VariantInterpretationAnalysis import Configuration
 
 import os
 
-class GeneVIA(cmd.Cmd):
+
+class GeneVA(cmd.Cmd):
     """
     This class inherits from the cmd module, which makes it easy to execute
     commands from a simple bash shell prompt.
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     Configuration.init("genevia.config")
 
     # Start the command prompt
-    GeneVIA().cmdloop("Welcome to the Gene Variant Interpretation Analyzer")
+    GeneVA().cmdloop("Welcome to the Gene Variant Interpretation Analyzer")
 
 
 

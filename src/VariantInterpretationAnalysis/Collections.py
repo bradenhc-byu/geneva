@@ -1,12 +1,15 @@
-################################################################################
-# Mutation - Data Structure
-#
-# Holds key,value pairs for features associated with this mutation
-#
-from Definitions import AMINO_ACIDS_3_1
+"""
+This module contains class definitions for the objects used in GeneVA. The two main objects are the Mutation object
+and the WekaData object.
+"""
+from Definitions import AMINO_ACIDS_3_1     # used in Mutation object
+import copy                                 # used in WekaData object
 
 
 class Mutation:
+    """
+    Holds key, value pairs for features associated with a mutation from the ClinVar database
+    """
 
     # Constants to define classifications of mutations
     PATHOGENIC = 1
@@ -128,12 +131,11 @@ class Mutation:
         return False
 
 
-################################################################################
-# Feature
-#
-# Contains feature name, location of source data
-# Used for storing non-default features
 class Feature:
+    """
+    Contains the feature name, the feature data type (a Weka attribute data type), and the filepath
+    to the source data used for storing non-default features
+    """
 
     STRING_TYPE = "string"
     NUMERIC_TYPE = "numeric"
@@ -158,18 +160,12 @@ class Feature:
     def set_filename(self, filename):
         self.__fileName = filename
 
-################################################################################
-# WekaData - Data Structure
-#
-# Contains a map of mutation objects that store information about features
-# associated with each mutation
-#
-# Since we are dealing with very large sets of data, this class uses
-# the Pandas data structure
-#
-import copy
+
 
 class WekaData:
+    """
+    Contains a map of mutation objects that store information about features associated with each mutation.
+    """
 
     def __init__(self):
         self.__mutations = list()
