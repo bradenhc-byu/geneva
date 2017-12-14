@@ -16,3 +16,7 @@
 
 # Ignore the data files being updated by the program
 src/VariantInterpretationAnalysis/data/
+
+# Do not include published code
+geneva*.tar*
+**.tar*
