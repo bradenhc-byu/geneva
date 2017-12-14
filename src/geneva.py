@@ -222,7 +222,7 @@ if __name__ == "__main__":
     os.system("pip install mysql-connector==2.1.6")
 
     # Initialize configuration
-    Configuration.init("genevia.config")
+    # Configuration.init("genevia.config")
 
     # Start the command prompt
     GeneVA().cmdloop("Welcome to the Gene Variant Interpretation Analyzer")
