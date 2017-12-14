@@ -1,3 +1,9 @@
+"""
+Parses amino acid properties from the a dataset formatted as an Amino Acid Index. Specifically this parser only
+uses the aaindex2 and aaindex3 files provided in the data directory, since they are in a different format than
+aaindex1.
+"""
+
 import sys
 import re
 

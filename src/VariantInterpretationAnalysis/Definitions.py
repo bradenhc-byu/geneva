@@ -1,7 +1,8 @@
-################################################################################
-# Project Definitions
-#
-#
+"""
+Definitions Module
+
+Contains Project definitions included in multiple GeneVA modules
+"""
 import os
 
 

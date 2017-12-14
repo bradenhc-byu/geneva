@@ -1,9 +1,9 @@
-################################################################################
-# Weka Primer
-#
-# This module takes a fully populated WekaData object and writes it to a file
-# that the Weka machine learning program can use
-#
+"""
+WekaPrimer Module
+
+This module takes a fully populated WekaData object and writes it to a file
+that the Weka machine learning program can use
+"""
 from Collections import WekaData, Mutation, Feature
 from Definitions import DATA_DIR
 import Logger as Log

@@ -1,16 +1,26 @@
-################################################################################
+########################################################################################################################
 #
 # Parser for mutation information obtained via
 #
+"""
+This script has two functions. One is run from within GeneVA. The other is run when this script is the main point
+of execution for the python interpreter. Their functionalities are described below:
+
+1) parse_mutation(): takes ClinVar database information about several thousands of mutations and creates mutation
+   objects for each entry in the database. This method is run from within GeneVA
+
+2) pre_parse(): Pre-processes the ClinVar database to remove mutations that are duplicates, not clearly classified as
+   pathogenic or benign, or have conflicting classifications
+"""
 import os
 import re
 from VariantInterpretationAnalysis.Definitions import DATA_DIR
 from VariantInterpretationAnalysis.Collections import Mutation
 from VariantInterpretationAnalysis.Definitions import AMINO_ACIDS_1_3
-import VariantInterpretationAnalysis.Logger as Logger
+import VariantInterpretationAnalysis.Logger as Log
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 #
 def parse_mutation(line):
     """
@@ -34,7 +44,7 @@ def parse_mutation(line):
     return m
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Pre-parser
 #
 def pre_parse(infile, outfile, use_all=False):
@@ -54,7 +64,7 @@ def pre_parse(infile, outfile, use_all=False):
         with open(infile, "r") as input_file:
             parsed_mutations = dict()
             input_file.readline()
-            Logger.info("Starting parser")
+            Log.info("Starting parser")
             for line in input_file:
                 # Get the parts
                 data = line.strip().split()
@@ -117,7 +127,7 @@ def pre_parse(infile, outfile, use_all=False):
 
             input_file.close()
         output_file = open(outfile, "w")
-        Logger.info("Writing formatted data to file")
+        Log.info("Writing formatted data to file")
         for key in parsed_mutations.keys():
             m = parsed_mutations[key]
             line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(m[0],
@@ -129,7 +139,7 @@ def pre_parse(infile, outfile, use_all=False):
             output_file.write(line)
         output_file.close()
     else:
-        print Logger.error("Unable to open file")
+        print Log.error("Unable to open file")
 
 
 def main():

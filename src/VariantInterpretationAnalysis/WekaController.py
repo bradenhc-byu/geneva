@@ -1,18 +1,17 @@
-################################################################################
-# Weka Controller Module
-#
-# Takes a fully populated WekaData object and the location of a fully populated
-# ARFF file containing mutation information from the WekaData object
-# and runs various machine learning algorithms on a filtered subset of the
-# data to determine which features are most effective in correctly classifying
-# mutation classifications.
-#
+"""
+WekaController Module
+
+Takes a fully populated WekaData object and the location of a fully populated
+ARFF file containing mutation information from the WekaData object
+and runs various machine learning algorithms on a filtered subset of the
+data to determine which features are most effective in correctly classifying
+mutation classifications.
+"""
 import Logger as Log
-from Definitions import DATA_DIR
+from Definitions import DATA_DIR, WEKA_PATH
 import Configuration
 import os
 import platform
-from Definitions import WEKA_PATH
 
 
 def run_weka(weka_data, weka_file):
@@ -130,6 +129,7 @@ def unit_test():
         weka_data.addAlgorithm(AVAILABLE_ALGORITHMS[a])
     WekaPrimer.write_to_file(weka_data, weka_file)
     run_weka(weka_data, weka_file=weka_file)
+
 
 if __name__ == "__main__":
     Configuration.init("genevia.config")
