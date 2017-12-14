@@ -1,0 +1,14 @@
+#!/bin/bash
+# This script will create published version of GeneVA that can be
+# ported to different platforms that use Python 2.7
+
+tar_file_name="geneva"
+version="1.0.0"
+
+full_name="${tar_file_name}-${version}"
+
+mkdir "${full_name}"
+cp -r src/* "${full_name}/"
+cp data/* "${full_name}/VariantInterpretationAnalysis/data/"
+tar -czvf "${full_name}.tar.gz" "${full_name}/"
+rm -rf "${full_name}"
