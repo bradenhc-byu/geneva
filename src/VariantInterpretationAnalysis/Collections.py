@@ -3,9 +3,8 @@
 #
 # Holds key,value pairs for features associated with this mutation
 #
-import collections
-
 from Definitions import AMINO_ACIDS_3_1
+
 
 class Mutation:
 

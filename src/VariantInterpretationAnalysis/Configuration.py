@@ -6,6 +6,7 @@ import copy
 
 __configuration_map = dict()
 
+
 def init(filename):
     file_path = os.path.dirname(os.path.abspath(__file__)) + "/" + filename
     if os.path.exists(file_path):
@@ -22,8 +23,10 @@ def init(filename):
     else:
         print "[ERROR] Configuration failed: file does not exist:", file_path
 
-def getConfig(key):
+
+def get_config(key):
     return __configuration_map.get(key, None)
 
-def setConfig(key, value):
+
+def set_config(key, value):
     __configuration_map[key] = copy.deepcopy(value)

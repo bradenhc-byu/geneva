@@ -57,8 +57,8 @@ def run_weka(weka_data, weka_file):
     return True
 
 def convert_arff_to_all_nominal(weka_filepath):
-    # weka_path = '"' + Configuration.getConfig("weka_path") + '"'
-    weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
+    weka_path = '"' + Configuration.get_config("weka_path") + '"'
+    #weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     converted_filepath = weka_filepath.replace(".arff", "_converted.arff")
     convert_command = "java -cp {0} " \
                       "weka.filters.unsupervised.attribute.StringToNominal " \
@@ -69,7 +69,8 @@ def convert_arff_to_all_nominal(weka_filepath):
     return converted_filepath
 
 def filter_mutations(weka_filepath, weka_data):
-    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    weka_path = '"' + Configuration.get_config("weka_path") + '"'
+    #weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     filtered_weka_filepath = weka_filepath.replace(".arff","_filtered.arff")
 
     # create string to capture all non-default features (e.g., 95,96,97)
@@ -92,7 +93,8 @@ def filter_mutations(weka_filepath, weka_data):
 
 
 def build_command(algorithm, weka_file, result_file="./tmp_output"):
-    weka_path = '"' + Configuration.getConfig("weka_path") + '"'
+    weka_path = '"' + Configuration.get_config("weka_path") + '"'
+    #weka_path = "VariantInterpretationAnalysis/libs/weka.jar"
     grep_command = "grep" if platform.system().lower() != "windows" else \
         "findstr"
     if weka_path is None:
