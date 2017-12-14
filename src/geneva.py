@@ -4,15 +4,6 @@ Gene Variant Analyzer Module (GeneVA)
 Contains the main user interface (command line interpreter) for analyzing mutation features with
 several different machine learning algorithms.
 """
-# Fix dependencies
-import os
-try:
-    os.system("module load python/2/7")
-except:
-    print "exception caught: no command 'module load' found on OS"
-os.system("pip install --user httplib2")
-os.system("pip install --user mysql-connector==2.1.6")
-
 # Import the required files
 import VariantInterpretationAnalysis.CommandLine as cmd
 import VariantInterpretationAnalysis.Logger as Log
