@@ -1,0 +1,10 @@
+#!/bin/bash
+# This script launches the GeneVA program and fixes dependency issues
+
+# This is specifically for the supercomputer
+module load python/2/7
+
+# Install dependencies and run GeneVA
+pip install --user httplib2
+pip install --user mysql-connector==2.1.6
+python geneva.py

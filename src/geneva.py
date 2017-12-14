@@ -16,8 +16,6 @@ from VariantInterpretationAnalysis import WekaPrimer
 from VariantInterpretationAnalysis import WekaController
 from VariantInterpretationAnalysis import Configuration
 
-import os
-
 
 class GeneVA(cmd.Cmd):
     """
@@ -217,9 +215,6 @@ class GeneVA(cmd.Cmd):
 
 
 if __name__ == "__main__":
-
-    os.system("pip install httplib2")
-    os.system("pip install mysql-connector==2.1.6")
 
     # Initialize configuration
     # Configuration.init("genevia.config")
